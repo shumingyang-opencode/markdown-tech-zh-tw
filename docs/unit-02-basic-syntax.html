@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>單元 2 · 基礎語法 · Markdown 繁中教學站</title>
+<meta name="description" content="Markdown 基礎語法：標題、強調、段落與清單。">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>單元 2 · 基礎語法</h1>
+  <p class="subtitle">標題、強調、段落與清單 — Core Syntax</p>
+</header>
+
+<nav class="topnav">
+  <a href="../index.html">首頁</a>
+  <a href="../map.html">概念地圖</a>
+  <a href="../learning-path.html">學習路線</a>
+  <a href="index.html">單元教學</a>
+  <a href="../about.html">關於</a>
+</nav>
+
+<div class="back-link"><a href="index.html">← 單元教學</a></div>
+
+<div class="guide">
+
+  <h2>標題 · Headings</h2>
+  <p>用 <code>#</code> 到 <code>######</code> 表示六級標題。<code>#</code> 越多，層級越低。建議 <code>#</code> 後面加一個空格。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre># 標題一
+## 標題二
+### 標題三</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p style="font-size:1.3rem;font-weight:700;">標題一</p>
+        <p style="font-size:1.15rem;font-weight:700;">標題二</p>
+        <p style="font-size:1rem;font-weight:700;">標題三</p>
+      </div>
+    </div>
+  </div>
+  <p class="hint">另一個寫法：在標題文字下一行放 <code>===</code>（一級）或 <code>---</code>（二級），但底線式寫法不常用。</p>
+
+  <h2>強調 · Bold &amp; Italic</h2>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>**粗體**（雙星號）
+*斜體*（單星號）
+___粗體___ 也可用底線</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p><strong>粗體</strong>（雙星號）</p>
+        <p><em>斜體</em>（單星號）</p>
+        <p><strong>粗體</strong> 也可用底線</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout info">
+    <strong>建議：</strong>粗體用 <code>**</code>、斜體用 <code>*</code> 就好。
+    底線（<code>_</code>）在中文句子裡容易和文字黏在一起造成誤判，星號最直覺。
+  </div>
+
+  <h2>段落與換行 · Paragraphs &amp; Line Breaks</h2>
+  <p>段落之間用<strong>一個空行</strong>分隔；要在段落內強制換行，在行尾加<strong>兩個空格</strong>再 Enter。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>第一段。
+
+第二段（前面有空行）。
+
+同一段內換行（行尾兩個空格）  
+下一行還是同一段。</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p>第一段。</p>
+        <p>第二段（前面有空行）。</p>
+        <p>同一段內換行（行尾兩個空格）<br>下一行還是同一段。</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout warn">
+    <strong>常見錯誤：</strong>只按一次 Enter 在 Markdown 裡<strong>不會</strong>換行（會被合併成同一段）。
+    要開始新段落，請留一個空行。
+  </div>
+
+  <h2>無序清單 · Unordered Lists</h2>
+  <p>用 <code>-</code>、<code>*</code>、<code>+</code> 開頭。縮排四格（或兩格）可做巢狀清單。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>- 蘋果
+- 香蕉
+  - 芭蕉（縮排巢狀）
+    - 再下一層
+- 奇異果</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <ul style="margin:0.2rem 0 0.2rem 1.4rem;">
+          <li>蘋果</li>
+          <li>香蕉
+            <ul style="margin:0.1rem 0 0.1rem 1.4rem;">
+              <li>芭蕉（縮排巢狀）
+                <ul style="margin:0.1rem 0 0.1rem 1.4rem;"><li>再下一層</li></ul>
+              </li>
+            </ul>
+          </li>
+          <li>奇異果</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>有序清單 · Ordered Lists</h2>
+  <p>用 <code>1.</code>、<code>2.</code> 開頭。一個貼心設計：<strong>數字寫什麼都可以，渲染時會自動重新編號</strong>——全寫 <code>1.</code> 也能得到 1, 2, 3。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>1. 先安裝
+2. 再設定
+   1. 子步驟 A（縮排）
+   2. 子步驟 B
+3. 最後執行</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <ol style="margin:0.2rem 0 0.2rem 1.4rem;">
+          <li>先安裝</li>
+          <li>再設定
+            <ol style="margin:0.1rem 0 0.1rem 1.4rem;">
+              <li>子步驟 A（縮排）</li>
+              <li>子步驟 B</li>
+            </ol>
+          </li>
+          <li>最後執行</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>實用技巧：</strong>在 <code>-</code> 或 <code>1.</code> 後面加<strong>空格</strong>再寫文字，
+    標記符號與內容之間的空格是語法的一部分。
+  </div>
+
+  <h2>動手練習</h2>
+  <p>在 <a href="https://dillinger.io/" rel="noopener">Dillinger</a> 或 VS Code 開一個 <code>practice.md</code>，試著寫：</p>
+  <div class="demo-block">
+    <div class="demo-label">練習題 · PRACTICE</div>
+    <pre># 我的第一篇 Markdown
+
+這是**重點**，這是*斜體*。
+
+## 待辦清單
+
+- 完成單元 2
+1. 練習五種語法
+2. 練習巢狀清單</pre>
+  </div>
+
+  <div class="outcome">
+    <strong>看完這頁你應該能說出：</strong>
+    <ul>
+      <li>六級標題的寫法，以及 <code>#</code> 後要加空格。</li>
+      <li>粗體 <code>**</code>、斜體 <code>*</code> 的寫法。</li>
+      <li>段落之間要空一行；段內換行要用行尾兩個空格。</li>
+      <li>有序清單的編號會自動產生，數字寫錯也沒關係。</li>
+    </ul>
+  </div>
+
+  <h2>延伸閱讀</h2>
+  <ul>
+    <li>下一篇：<a href="unit-03-links-images.html">單元 3 · 連結與圖片</a>——讓文件連起來。</li>
+    <li><a href="https://www.markdownguide.org/basic-syntax/" rel="noopener">Markdown Guide: Basic Syntax</a>（英文）</li>
+  </ul>
+
+  <div class="next-prev">
+    <a href="unit-01-markdown-intro.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 1 · Markdown 是什麼</div></a>
+    <a class="np-next" href="unit-03-links-images.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 3 · 連結與圖片</div></a>
+  </div>
+</div>
+
+<footer>
+  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
+</footer>
+
+</div>
+</body>
+</html>

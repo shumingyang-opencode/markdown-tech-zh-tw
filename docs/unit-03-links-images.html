@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>單元 3 · 連結與圖片 · Markdown 繁中教學站</title>
+<meta name="description" content="Markdown 連結與圖片：行內式、參照式、自動連結與相對路徑。">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>單元 3 · 連結與圖片</h1>
+  <p class="subtitle">行內式、參照式、自動連結與相對路徑 — Links &amp; Images</p>
+</header>
+
+<nav class="topnav">
+  <a href="../index.html">首頁</a>
+  <a href="../map.html">概念地圖</a>
+  <a href="../learning-path.html">學習路線</a>
+  <a href="index.html">單元教學</a>
+  <a href="../about.html">關於</a>
+</nav>
+
+<div class="back-link"><a href="index.html">← 單元教學</a></div>
+
+<div class="guide">
+
+  <h2>行內式連結 · Inline Links</h2>
+  <p>基本形式 <code>[文字](網址)</code>，後面可以再加「標題」（滑鼠移上去顯示）：<code>[文字](網址 "標題")</code>。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>這份[教學網站](https://example.com)
+有[提示標題](https://example.com "滑上去看看")。</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p>這份<a href="#">教學網站</a><br>有<a href="#" title="滑上去看看">提示標題</a>。</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>參照式連結 · Reference Links</h2>
+  <p>連結很多時，把網址集中到文末定義，正文乾淨好維護。<code>[文字][標籤]</code> + 文末 <code>[標籤]: 網址</code>。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>先看[官方規格][spec]，再看[入門指南][guide]。
+
+[spec]: https://daringfireball.net/projects/markdown/
+[guide]: https://www.markdownguide.org/</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p>先看<a href="#">官方規格</a>，再看<a href="#">入門指南</a>。</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout info">
+    <strong>建議：</strong>一份文件超過三五個連結，就用參照式。文末的定義區整齊排列，之後要改網址只要改一處。
+  </div>
+
+  <h2>自動連結 · Automatic Links</h2>
+  <p>用尖括號包住網址或信箱，可直接點擊。GitHub 上甚至<strong>連尖括號都不必</strong>（單元 6 會講）。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>連到 &lt;https://github.com&gt;
+或寫信到 &lt;hello@example.com&gt;</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p>連到 <a href="#">https://github.com</a><br>或寫信到 <a href="#">hello@example.com</a></p>
+      </div>
+    </div>
+  </div>
+
+  <h2>圖片 · Images</h2>
+  <p>語法 = 連結前加一個 <code>!</code>：<code>![替代文字](圖片網址)</code>。替代文字（alt text）在圖片載入失敗或螢幕閱讀器時很重要。</p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">原始碼 · SOURCE</div>
+      <pre>![Logo 圖片](images/logo.png "站名")
+
+[![Logo](images/logo.png)](https://example.com)</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">渲染結果 · RENDERED</div>
+      <div class="demo-render">
+        <p>第一行：<code>![alt](url)</code> 直接顯示圖片。</p>
+        <p>第二行：把整張圖片包進 <code>[]()</code> 連結，點圖即跳轉——常見於「點 logo 回首頁」。</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout warn">
+    <strong>常見錯誤：</strong>圖片網址寫錯只會顯示破圖，因為沒有 <code>alt</code> 之外的回饋。
+    記得給每張圖寫清楚的替代文字。
+  </div>
+
+  <h2>相對路徑 · Relative Paths</h2>
+  <p>在 repo 內部的文件（如 README 引用同 repo 的圖片），用<strong>相對路徑</strong>而非完整網址，好處是 clone 後仍有效。</p>
+  <div class="demo-block">
+    <div class="demo-label">相對路徑規則 · PATHS</div>
+    <pre>docs/guide.md               # 同資料夾內
+./docs/guide.md             # 同上（./ 表示「目前資料夾」）
+../README.md                # 上一層資料夾
+images/screenshot.png       # 子資料夾
+docs/unit-03/#連結與圖片     # 錨點：跳到該頁的某小節</pre>
+  </div>
+  <div class="callout info">
+    <strong>GitHub 小知識：</strong>在 GitHub 上，markdown 檔之間的相對連結即使檔案被移動，
+    GitHub 會自動修正路徑——這是它比完整網址好的地方。
+  </div>
+
+  <div class="outcome">
+    <strong>看完這頁你應該能說出：</strong>
+    <ul>
+      <li>行內式與參照式連結的差別，以及何時用參照式。</li>
+      <li>自動連結 <code>&lt;url&gt;</code> 的寫法。</li>
+      <li>圖片語法 <code>![alt](url)</code> 與「點圖跳轉」的包法。</li>
+      <li>為什麼 repo 內文件要用相對路徑。</li>
+    </ul>
+  </div>
+
+  <h2>延伸閱讀</h2>
+  <ul>
+    <li>下一篇：<a href="unit-04-code.html">單元 4 · 程式碼</a>——工程師最常用的區塊。</li>
+    <li><a href="https://www.markdownguide.org/basic-syntax/#links" rel="noopener">Markdown Guide: Links</a>（英文）</li>
+  </ul>
+
+  <div class="next-prev">
+    <a href="unit-02-basic-syntax.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 2 · 基礎語法</div></a>
+    <a class="np-next" href="unit-04-code.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 4 · 程式碼</div></a>
+  </div>
+</div>
+
+<footer>
+  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
+</footer>
+
+</div>
+</body>
+</html>

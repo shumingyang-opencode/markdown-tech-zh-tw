@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>單元 8 · 實作與最佳實踐 · Markdown 繁中教學站</title>
+<meta name="description" content="Markdown 實作：完整 README 範例、常見錯誤與最佳實踐。">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>單元 8 · 實作與最佳實踐</h1>
+  <p class="subtitle">完整 README、常見錯誤、風格指南 — Practice</p>
+</header>
+
+<nav class="topnav">
+  <a href="../index.html">首頁</a>
+  <a href="../map.html">概念地圖</a>
+  <a href="../learning-path.html">學習路線</a>
+  <a href="index.html">單元教學</a>
+  <a href="../about.html">關於</a>
+</nav>
+
+<div class="back-link"><a href="index.html">← 單元教學</a></div>
+
+<div class="guide">
+
+  <p>
+    最後一單元：把前面學的全部串起來，寫一份「夠水準」的 README，
+    並建立一套長期適用的寫作習慣。
+  </p>
+
+  <h2>完整 README 範例</h2>
+  <p>一份好的 README 通常包含：專案名、一句話簡介、功能清單、安裝與使用、License。下面是中英對照的完整示範：</p>
+  <div class="pair">
+    <div class="col-en">
+      <h3>markdown-tech-zh-tw / README</h3>
+      <pre># My Awesome Tool
+
+A CLI tool that turns Markdown into PDF.
+
+## Features
+
+- Converts `.md` to `.pdf`
+- Supports GFM tables
+- Batch processing
+
+## Install
+
+```bash
+npm install -g my-tool
+```
+
+## Usage
+
+```bash
+my-tool build docs/ -o out.pdf
+```
+
+## License
+
+MIT</pre>
+    </div>
+    <div class="col-zh">
+      <h3>解說 · EXPLAINED</h3>
+      <p><strong>標題</strong>用一級標題放專案名。</p>
+      <p><strong>一句話簡介</strong>——讓人不需讀原始碼就知道這工具做什麼。</p>
+      <p><strong>Features 清單</strong>——用無序清單條列賣點。</p>
+      <p><strong>Install / Usage</strong>——用 fenced code block 放指令，方便複製。</p>
+      <p><strong>License</strong>——直接寫檔名，附上授權全文連結。</p>
+    </div>
+  </div>
+
+  <h2>常見錯誤 · Common Mistakes</h2>
+  <table>
+    <tr><th>錯誤</th><th>後果</th><th>修正</th></tr>
+    <tr><td>段落之間忘了空行</td><td>被合併成同一段</td><td>段落間留一個空行</td></tr>
+    <tr><td>行尾想換行卻只按 Enter</td><td>沒有效果</td><td>行尾兩個空格，或直接開新段落</td></tr>
+    <tr><td><code>#</code> 後面沒空格</td><td>可能不被當標題</td><td><code># 標題</code> 加空格</td></tr>
+    <tr><td>標題下直接寫 <code>---</code></td><td>變成二級標題</td><td>分隔線前留空行</td></tr>
+    <tr><td>表格欄位數不一致</td><td>渲染錯亂</td><td>每列欄位數對齊</td></tr>
+    <tr><td>中文與 <code>**</code> 之間沒空格</td><td>粗體可能失效</td><td><code>**重點**</code> 兩側加空格</td></tr>
+    <tr><td>連結網址含空格</td><td>連結截斷</td><td>網址用 <code>%20</code> 或重寫</td></tr>
+  </table>
+
+  <h2>最佳實踐 · Best Practices</h2>
+  <ul>
+    <li><strong>語法一致性</strong>：全文件統一用 <code>-</code> 或 <code>*</code>，別混用。</li>
+    <li><strong>標題層級跳號</strong>：避免 <code>##</code> 直接跳到 <code>####</code>，維持層級完整。</li>
+    <li><strong>文字長度</strong>：README 保持簡潔，細節放 <code>docs/</code>。</li>
+    <li><strong>圖片用相對路徑</strong>：clone 下來也有效。</li>
+    <li><strong>程式碼寫清楚語言</strong>：<code>```bash</code> 比裸 <code>```</code> 好。</li>
+    <li><strong>善用參照式連結</strong>：網址集中文末，好維護。</li>
+  </ul>
+
+  <h2>檢查工具 · Linting</h2>
+  <p>像程式碼有 linter，Markdown 也有：</p>
+  <table>
+    <tr><th>工具</th><th>說明</th></tr>
+    <tr><td><strong>markdownlint</strong></td><td>VS Code 外掛／CLI，檢查縮排、標題層級、行長度</td></tr>
+    <tr><td><strong>markdownlint-cli2</strong></td><td>可接進 CI，PR 自動檢查</td></tr>
+    <tr><td><strong>prettier</strong></td><td>自動排版 Markdown</td></tr>
+  </table>
+
+  <h2>風格指南 · Style Guide</h2>
+  <p>寫給團隊或自己的文件，可以先約定：</p>
+  <ul>
+    <li>用繁體中文寫解說，英文術語第一次出現時附上。</li>
+    <li>程式指令一律用 fenced code block。</li>
+    <li>「注意」「警告」用引用區塊 <code>&gt;</code> 標示。</li>
+    <li>每個檔案一級標題只有一個（就是檔名/主題）。</li>
+  </ul>
+
+  <h2>把整門課串起來</h2>
+  <p>完成這 8 個單元，你已經掌握：</p>
+  <ol>
+    <li><strong>寫</strong>：核心語法 + 表格 + GFM（單元 2–6）。</li>
+    <li><strong>放</strong>：GitHub README、Issue、PR（單元 6–7）。</li>
+    <li><strong>轉</strong>：靜態網站、Obsidian、pandoc（單元 7）。</li>
+    <li><strong>好習慣</strong>：一致性、lint、風格指南（本單元）。</li>
+  </ol>
+
+  <div class="callout">
+    <strong>下一步：</strong>挑一個你手上的專案，用這套習慣重寫它的 README，
+    或把這份<a href="https://shumingyang-opencode.github.io/markdown-tech-zh-tw/" rel="noopener">教學站</a>的結構當範本，開始你的第一份正式文件。
+  </div>
+
+  <div class="outcome">
+    <strong>看完這頁你應該能說出：</strong>
+    <ul>
+      <li>一份完整 README 的基本段落順序。</li>
+      <li>至少五個常見 Markdown 錯誤與修正。</li>
+      <li>一致性、標題層級、相對路徑等最佳實踐。</li>
+      <li>如何用 markdownlint 自動檢查。</li>
+    </ul>
+  </div>
+
+  <h2>延伸閱讀</h2>
+  <ul>
+    <li><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes" rel="noopener">GitHub Docs: About READMEs</a></li>
+    <li><a href="https://github.com/markdownlint/markdownlint" rel="noopener">markdownlint</a></li>
+    <li><a href="../learning-path.html">學習路線</a>：複習全站</li>
+  </ul>
+
+  <div class="next-prev">
+    <a href="unit-07-markdown-ecosystem.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 7 · Markdown 生態系</div></a>
+    <a class="np-next" href="index.html"><div class="np-label">課程完成 →</div><div class="np-name">回首頁 · 單元教學目錄</div></a>
+  </div>
+</div>
+
+<footer>
+  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
+</footer>
+
+</div>
+</body>
+</html>
