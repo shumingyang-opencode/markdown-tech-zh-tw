@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>單元 1 · Markdown 是什麼 · Markdown 繁中教學站</title>
+<meta name="description" content="Markdown 是什麼：與 HTML 的關係、應用場景與為何值得學。">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>單元 1 · Markdown 是什麼</h1>
+  <p class="subtitle">用純文字，寫出結構化的文件 — What &amp; Why</p>
+</header>
+
+<nav class="topnav">
+  <a href="../index.html">首頁</a>
+  <a href="../map.html">概念地圖</a>
+  <a href="../learning-path.html">學習路線</a>
+  <a href="index.html">單元教學</a>
+  <a href="../about.html">關於</a>
+</nav>
+
+<div class="back-link"><a href="index.html">← 單元教學</a></div>
+
+<div class="guide">
+
+  <h2>一句話定義</h2>
+  <p>
+    <strong>Markdown</strong> 是一種「以純文字撰寫、渲染成結構化文件」的<strong>輕量標記語言</strong>（lightweight markup language）。
+    你用一般打字的方式輸入符號與文字，再用任何一款 Markdown 編輯器或渲染器，就能把同一份文字變成帶有
+    標題、清單、表格、程式碼區塊的美觀文件。
+  </p>
+  <div class="demo-grid">
+    <div class="demo-block">
+      <div class="demo-label">輸入：純文字 · PLAIN TEXT</div>
+      <pre># 這是標題
+**這是粗體**，*這是斜體*。</pre>
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">輸出：結構化文件 · STRUCTURED</div>
+      <div class="demo-render">
+        <h3 style="margin:0.2rem 0 0.3rem;">這是標題</h3>
+        <p><strong>這是粗體</strong>，<em>這是斜體</em>。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>重點：</strong>Markdown 的原始檔就是<strong>人可直接閱讀的純文字</strong>——
+    就算沒有渲染器，打開原始檔也能看懂內容。這是它與 Word 這類「所見即所得」文件最大的不同。
+  </div>
+
+  <h2>Markdown 的誕生</h2>
+  <p>
+    2004 年，<strong>John Gruber</strong> 與 Aaron Swartz 提出 Markdown，
+    靈感來自當時程式設計師在電子郵件裡用符號排版（例如用 <code>*星號*</code> 表示粗體）的習慣。
+    目標很明確：
+  </p>
+  <ul>
+    <li><strong>可讀性優先</strong>（readability）——原始檔本身就清楚易懂。</li>
+    <li><strong>易於書寫</strong>（ease of writing）——語法少、符號直覺。</li>
+    <li>只需一套規則就能轉成 HTML，成為當時部落格寫作的好工具。</li>
+  </ul>
+  <p class="hint">原文定義：「Markdown is intended to be as easy-to-read and easy-to-write as is feasible.」</p>
+
+  <h2>Markdown vs HTML vs Word</h2>
+  <p>三者的定位不同，用一張表比較：</p>
+  <table>
+    <tr><th>比較</th><th>Markdown</th><th>HTML</th><th>Word（.docx）</th></tr>
+    <tr>
+      <td>本質</td>
+      <td>輕量標記語言</td>
+      <td>全功能標記語言</td>
+      <td>二進位文件格式</td>
+    </tr>
+    <tr>
+      <td>學習成本</td>
+      <td>低（10 種語法）</td>
+      <td>中高（標籤多）</td>
+      <td>中（需滑鼠操作）</td>
+    </tr>
+    <tr>
+      <td>原始檔可讀性</td>
+      <td>極高</td>
+      <td>低（被標籤淹沒）</td>
+      <td>不可讀（二進位）</td>
+    </tr>
+    <tr>
+      <td>版本控管（Git）</td>
+      <td>理想（純文字 diff）</td>
+      <td>可行</td>
+      <td>困難（binary diff）</td>
+    </tr>
+    <tr>
+      <td>典型用途</td>
+      <td>文件、README、筆記</td>
+      <td>網頁</td>
+      <td>正式報告、排版稿</td>
+    </tr>
+  </table>
+  <div class="callout warn">
+    <strong>常見誤解：</strong>Markdown 不會取代 HTML——它是 HTML 的<strong>「更友善的寫法」</strong>。
+    需要精細排版時，Markdown 甚至可以內嵌 HTML 兜底（單元 5 會講）。
+  </div>
+
+  <h2>誰在用 Markdown</h2>
+  <p>你不必刻意「找地方用」，現代開發者日常已經離不開它：</p>
+  <table>
+    <tr><th>場域</th><th>用途</th><th>單元</th></tr>
+    <tr><td><strong>GitHub</strong></td><td>README、Issue、Pull Request 描述</td><td><a href="unit-06-github-flavored-markdown.html">單元 6</a></td></tr>
+    <tr><td><strong>筆記軟體</strong></td><td>Obsidian、Logseq、Notion 的底層格式</td><td><a href="unit-07-markdown-ecosystem.html">單元 7</a></td></tr>
+    <tr><td><strong>靜態網站</strong></td><td>Hugo、Astro、mkdocs 的文章原始檔</td><td><a href="unit-07-markdown-ecosystem.html">單元 7</a></td></tr>
+    <tr><td><strong>文件系統</strong></td><td>Wiki、部落格、API 文件</td><td><a href="unit-07-markdown-ecosystem.html">單元 7</a></td></tr>
+    <tr><td><strong>AI 工具</strong></td><td>AI 輸出文件的預設格式</td><td>—</td></tr>
+  </table>
+
+  <h2>為什麼值得學</h2>
+  <ul>
+    <li><strong>語法極少</strong>：常用語法不到十種，一兩天就能上手。</li>
+    <li><strong>純文字永不過時</strong>：不依賴特定軟體版本或格式相容性。</li>
+    <li><strong>完美配合 Git</strong>：每行改動都能被追蹤，團隊協作友善。</li>
+    <li><strong>一次寫、到處渲染</strong>：同一份原始檔可變成網頁、PDF、簡報。</li>
+    <li><strong>工程師通用語言</strong>：在 GitHub、Stack Overflow、技術部落格都講這種語言。</li>
+  </ul>
+
+  <h2>現在就開始練</h2>
+  <p>不需要安裝任何東西，三種方式任選：</p>
+  <ol>
+    <li><strong>線上試玩</strong>：<a href="https://dillinger.io/" rel="noopener">Dillinger</a> 或 <a href="https://stackedit.io/" rel="noopener">StackEdit</a>，左邊寫右邊即時預覽。</li>
+    <li><strong>本機 VS Code</strong>：安裝「Markdown Preview Enhanced」外掛，寫 <code>.md</code> 檔即可預覽。</li>
+    <li><strong>GitHub</strong>：開個 repo 寫 README.md，GitHub 會自動渲染。</li>
+  </ol>
+
+  <div class="outcome">
+    <strong>看完這頁你應該能說出：</strong>
+    <ul>
+      <li>Markdown 是什麼、它與 HTML / Word 的差別。</li>
+      <li>至少三個使用 Markdown 的日常場景。</li>
+      <li>它的原始檔為什麼特別適合用 Git 版本控管。</li>
+      <li>在哪裡可以立刻開始練習寫 Markdown。</li>
+    </ul>
+  </div>
+
+  <h2>延伸閱讀</h2>
+  <ul>
+    <li>下一篇：<a href="unit-02-basic-syntax.html">單元 2 · 基礎語法</a>——動手寫第一篇 Markdown。</li>
+    <li><a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>（John Gruber）</li>
+    <li><a href="https://www.markdownguide.org/" rel="noopener">Markdown Guide</a>（英文參考）</li>
+  </ul>
+
+  <div class="next-prev">
+    <a href="index.html"><div class="np-label">← 上一層</div><div class="np-name">單元教學目錄</div></a>
+    <a class="np-next" href="unit-02-basic-syntax.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 2 · 基礎語法</div></a>
+  </div>
+</div>
+
+<footer>
+  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
+</footer>
+
+</div>
+</body>
+</html>

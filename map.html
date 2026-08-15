@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>概念地圖 · Markdown 繁中教學站</title>
+<meta name="description" content="Markdown 語法全景圖——核心語法、GFM、生態系與工具，一張圖看懂。">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>概念地圖</h1>
+  <p class="subtitle">Markdown 的核心概念，一張圖看懂</p>
+</header>
+
+<nav class="topnav">
+  <a href="index.html">首頁</a>
+  <a href="map.html">概念地圖</a>
+  <a href="learning-path.html">學習路線</a>
+  <a href="docs/index.html">單元教學</a>
+  <a href="about.html">關於</a>
+</nav>
+
+<div class="back-link"><a href="index.html">← 回首頁</a></div>
+
+<div class="guide">
+  <p>
+    Markdown 做的事可以一句話講完：<strong>用純文字的語法，寫出結構化的文件</strong>。
+    關鍵在於——語法極少、寫法固定，而「看到什麼就渲染成什麼」的規則一致，學習成本極低。
+    下面從「核心語法」到「生態系」拆解。
+  </p>
+
+  <h2>1. 核心語法 · Core Syntax</h2>
+  <p>最常用的十種語法，佔日常寫作 90% 的需求（<a href="docs/unit-02-basic-syntax.html">單元 2–5</a>）。</p>
+  <div class="concept-map">
+    <div class="cm-row">
+      <a class="cm-node on-ramp" href="docs/unit-02-basic-syntax.html"><span class="label">標題</span><span class="tag"># 到 ######，六級</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-02-basic-syntax.html"><span class="label">強調</span><span class="tag">**粗體** *斜體*</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-02-basic-syntax.html"><span class="label">清單</span><span class="tag">有序 / 無序 / 巢狀</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-03-links-images.html"><span class="label">連結</span><span class="tag">[文字](網址)</span></a>
+    </div>
+    <div class="cm-row">
+      <a class="cm-node on-ramp" href="docs/unit-03-links-images.html"><span class="label">圖片</span><span class="tag">![alt](url)</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-04-code.html"><span class="label">程式碼</span><span class="tag">行內 / 區塊 / 高亮</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-05-tables-blockquote.html"><span class="label">引用</span><span class="tag">&gt; 引言區塊</span></a>
+      <a class="cm-node on-ramp" href="docs/unit-05-tables-blockquote.html"><span class="label">分隔線</span><span class="tag">--- 水平線</span></a>
+    </div>
+  </div>
+
+  <h2>2. 進階擴展 · GitHub Flavored Markdown</h2>
+  <p>GitHub 在標準 Markdown 上擴充的實用語法（<a href="docs/unit-06-github-flavored-markdown.html">單元 6</a>）。</p>
+  <div class="concept-map">
+    <div class="cm-row">
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">任務清單</span><span class="tag">- [ ] / - [x]</span></a>
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">刪除線</span><span class="tag">~~刪除~~</span></a>
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">表格</span><span class="tag">| 欄位 | 對齊 |</span></a>
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">自動連結</span><span class="tag">URL / #issue / @mention</span></a>
+    </div>
+    <div class="cm-row">
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">註腳</span><span class="tag">[^1] 底註</span></a>
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">Emoji</span><span class="tag">:tada: 表情</span></a>
+      <a class="cm-node service" href="docs/unit-06-github-flavored-markdown.html"><span class="label">HTML 內嵌</span><span class="tag">&lt;details&gt; 等</span></a>
+    </div>
+  </div>
+
+  <h2>3. 生態系 · Ecosystem</h2>
+  <p>Markdown 被哪裡使用？掌握語法後，這些都是你的主場（<a href="docs/unit-07-markdown-ecosystem.html">單元 7</a>）。</p>
+  <div class="concept-map">
+    <div class="cm-row">
+      <a class="cm-node standalone" href="docs/unit-07-markdown-ecosystem.html"><span class="label">GitHub</span><span class="tag">README · Issue · PR</span></a>
+      <a class="cm-node standalone" href="docs/unit-07-markdown-ecosystem.html"><span class="label">靜態網站</span><span class="tag">Hugo · Astro · mkdocs</span></a>
+      <a class="cm-node standalone" href="docs/unit-07-markdown-ecosystem.html"><span class="label">筆記軟體</span><span class="tag">Obsidian · Logseq</span></a>
+      <a class="cm-node standalone" href="docs/unit-07-markdown-ecosystem.html"><span class="label">文件系統</span><span class="tag">Wiki · 部落格</span></a>
+    </div>
+  </div>
+
+  <h2>4. 工具與轉換 · Tools</h2>
+  <p>寫得順手、轉得出去的輔助工具（<a href="docs/unit-08-practice-best-practices.html">單元 8</a>）。</p>
+  <div class="concept-map">
+    <div class="cm-row">
+      <a class="cm-node meta" href="docs/unit-08-practice-best-practices.html"><span class="label">編輯器</span><span class="tag">VS Code · Typora · 即時預覽</span></a>
+      <a class="cm-node meta" href="docs/unit-08-practice-best-practices.html"><span class="label">轉檔</span><span class="tag">pandoc · markitdown</span></a>
+      <a class="cm-node meta" href="docs/unit-07-markdown-ecosystem.html"><span class="label">圖表</span><span class="tag">Mermaid 流程圖</span></a>
+      <a class="cm-node meta" href="docs/unit-08-practice-best-practices.html"><span class="label">檢查</span><span class="tag">markdownlint</span></a>
+    </div>
+  </div>
+
+  <p class="cm-caption">箭頭方向即學習順序：先核心語法，再 GFM，最後進入生態系與工具。</p>
+
+  <div class="callout info">
+    <strong>小結：</strong>Markdown = 「極少的語法」×「一致的渲染規則」。學會核心語法就能寫出 90% 的文件，
+    補上 GFM 就能在 GitHub 協作，進入生態系就能把 Markdown 變成網站、筆記與文件。
+  </div>
+</div>
+
+<footer>
+  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
+</footer>
+
+</div>
+</body>
+</html>
