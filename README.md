@@ -48,3 +48,7 @@ npx serve .
 ## 授權
 
 本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；文中英文術語與語法示範引用自 Markdown 官方規格與 GitHub Flavored Markdown 規格。
+
+## 相關連結
+
+- 學習路徑建議服務：[learning-path-advisor](https://shuming-yang.github.io/learning-path-advisor/) — 依角色推薦教學網站學習路徑
