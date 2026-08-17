@@ -3,146 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>單元 4 · 程式碼 · Markdown 繁中教學站</title>
-<meta name="description" content="Markdown 程式碼：行內 code、程式碼區塊與語法高亮。">
+<title>單元 4 · 程式碼 · Markdown 繁體中文教學站</title>
+<meta name="description" content="行內 code、程式碼區塊、語法高亮">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
 <div class="container">
-
 <header>
   <h1>單元 4 · 程式碼</h1>
-  <p class="subtitle">行內 code、程式碼區塊與語法高亮 — Code</p>
+  <p class="subtitle">行內 code、程式碼區塊、語法高亮</p>
 </header>
-
 <nav class="topnav">
   <a href="../index.html">首頁</a>
   <a href="../map.html">概念地圖</a>
   <a href="../learning-path.html">學習路線</a>
-  <a href="index.html">單元教學</a>
+  <a href="../docs/index.html">單元教學</a>
+  <a href="../glossary.html">術語表</a>
   <a href="../about.html">關於</a>
-</nav>
-
-<div class="back-link"><a href="index.html">← 單元教學</a></div>
-
+</nav><div class="back-link"><a href="index.html">← 單元教學</a></div>
 <div class="guide">
+<h2>4.1 行內程式碼 · Inline Code</h2>
+<p>用<strong>反引號</strong> <code>`</code> 包住一段文字，變成行內程式碼——適合提及變數、指令、檔名：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>執行 <code>npm install</code> 安裝依賴。
 
-  <h2>行內程式碼 · Inline Code</h2>
-  <p>在句子裡提到檔名、指令、變數時，用反引號 <code>`</code> 包起來。反引號是鍵盤左上角、<code>~</code> 下面那個鍵。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>執行 `npm install` 來安裝，
-設定檔是 `config.json`。</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>執行 <code>npm install</code> 來安裝，<br>設定檔是 <code>config.json</code>。</p>
-      </div>
-    </div>
-  </div>
-  <div class="callout info">
-    <strong>提示：</strong>若內容本身就含反引號，可用<strong>雙反引號</strong>包：<code>`` 反引號 ` 在內 ``</code>。
-  </div>
+變數 <code>score</code> 是數字，設定檔在 <code>config.yaml</code>。</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p>執行 <code>npm install</code> 安裝依賴。<br>變數 <code>score</code> 是數字，設定檔在 <code>config.yaml</code>。</p>
+  </div></div>
+</div>
+<div class="callout warn"><strong>行內 code 的陷阱：</strong>行內 code 內的反引號需用雙反引號包住（<code>`` `字面反引號` ``</code>）；特殊字元（如 <code>&lt;</code>）<strong>不會</strong>自動轉義，必要時手動寫實體。</div>
 
-  <h2>程式碼區塊 · Code Blocks</h2>
-  <p>多行程式碼用三個反引號（fence）包住，這是現今最主流的方式（GitHub Flavored Markdown 支援）。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>```python
+<h2>4.2 程式碼區塊 · Code Blocks（圍欄式）</h2>
+<p>用<strong>三個反引號</strong>開頭與結尾，第二行指定語言可啟動<strong>語法高亮</strong>：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>```python
 def greet(name):
     return f"Hello, {name}!"
-```</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <pre style="font-size:0.76rem;">def greet(name):
+```</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">def greet(name):
     return f"Hello, {name}!"</pre>
-      </div>
-    </div>
-  </div>
-  <p class="hint">另一種舊寫法：整段縮排四個空格或一個 Tab 也能產生區塊，但沒有語法高亮，不建議。</p>
+  </div></div>
+</div>
+<table>
+<tr><th>語言標記</th><th>範例語言</th></tr>
+<tr><td>常見</td><td><code>python</code>、<code>javascript</code>、<code>typescript</code>、<code>go</code>、<code>rust</code></td></tr>
+<tr><td>資料</td><td><code>json</code>、<code>yaml</code>、<code>xml</code>、<code>sql</code></td></tr>
+<tr><td>作業</td><td><code>bash</code>、<code>sh</code>、<code>powershell</code>、<code>dockerfile</code></td></tr>
+<tr><td>網頁</td><td><code>html</code>、<code>css</code>、<code>markdown</code></td></tr>
+</table>
+<div class="callout info"><strong>GFM 進階：</strong>在區塊後可加「註解行」高亮（<code>```python hl_lines="1 3"</code>，部分平台支援）。</div>
 
-  <h2>語法高亮 · Syntax Highlighting</h2>
-  <p>開頭的三個反引號後面寫上語言名稱，渲染器就會著色：<code>```python</code>、<code>```js</code>、<code>```bash</code>…</p>
-  <div class="demo-block">
-    <div class="demo-label">支援的常見語言標籤 · LANGUAGES</div>
-    <pre>python  js  javascript  ts  typescript  bash  sh  shell
-json  yaml  html  css  go  rust  java  c  cpp  sql
-diff  markdown  text（純文字，不高亮）</pre>
-  </div>
-
-  <h2>在區塊內顯示「三個反引號」</h2>
-  <p>要示範「程式碼區塊」本身時，外層用<strong>四個反引號</strong>包住內層的三個反引號。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>````text
+<h2>4.3 圍欄區塊內顯示反引號</h2>
+<p>程式碼本身包含三個反引號（如寫 Markdown 教學）時，用<strong>更多個反引號</strong>當圍欄：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>````
 ```
-# 這是程式碼區塊的語法
+這是內部的程式碼區塊
 ```
-````</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <pre style="font-size:0.76rem;">```
-# 這是程式碼區塊的語法
+````</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">```
+這是內部的程式碼區塊
 ```</pre>
-      </div>
-    </div>
-  </div>
+  </div></div>
+</div>
 
-  <h2>特殊字元要跳脫 · Escaping</h2>
-  <p>想讓語法字元「顯示字元本身」而不是被解析，在前面加反斜線 <code>\</code>。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>\*不是斜體\*，\# 不是標題</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>*不是斜體*，# 不是標題</p>
-      </div>
-    </div>
-  </div>
-  <div class="callout warn">
-    <strong>提醒：</strong>在 HTML 原始檔裡（像本教學頁），<code>&amp;</code>、<code>&lt;</code>、<code>&gt;</code>
-    要寫成 <code>&amp;amp;</code> 等才能正確顯示——那是 HTML 的規則，不是 Markdown 的。
-  </div>
+<h2>4.4 縮排式程式碼區塊（傳統寫法）</h2>
+<p>每行縮排<strong>四個空格或一個 tab</strong>，也是一種區塊寫法（GFM 仍支援，但不建議新文件使用，因無法指定語言高亮）：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>    echo "這是縮排式區塊"
+    exit 0</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">echo "這是縮排式區塊"
+exit 0</pre>
+  </div></div>
+</div>
+<div class="callout"><strong>選擇：</strong>新文件一律用<strong>圍欄式（```）</strong>——可指定語言、可巢狀、不會被誤判。縮排式僅在極舊文件可見。</div>
+
+<h2>4.5 HTML 特殊字元安全顯示</h2>
+<p>在程式碼區塊內，<code>&lt;</code>、<code>&gt;</code>、<code>&amp;</code> 不會被當成 HTML——直接原樣顯示（區塊是「免轉義」區域）：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>```html
+<div class="card">A &amp; B &lt; 10</div>
+```</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">&lt;div class="card"&gt;A &amp;amp; B &amp;lt; 10&lt;/div&gt;</pre>
+  </div></div>
+</div>
+
+<h2>4.6 Worked Example：README 的安裝與使用</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>## 安裝
+
+```bash
+npm install my-tool
+```
+
+## 使用
+
+```js
+import { run } from 'my-tool';
+run('config.yaml');
+```</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p style="font-weight:700;">安裝</p>
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">npm install my-tool</pre>
+    <p style="font-weight:700;">使用</p>
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.95rem;font-size:0.78rem;">import { run } from 'my-tool';
+run('config.yaml');</pre>
+  </div></div>
+</div>
+<p>練習：寫一個「安裝 + 執行」的 bash 區塊，並加上 <code># 安裝</code>、<code># 執行</code> 註解。</p>
 
   <div class="outcome">
-    <strong>看完這頁你應該能說出：</strong>
-    <ul>
-      <li>行內 code 用 <code>`</code>、區塊用 <code>```</code>。</li>
-      <li>在 fence 開頭寫語言名即可語法高亮。</li>
-      <li>如何用四重反引號示範「三個反引號」本身。</li>
-      <li>用 <code>\</code> 跳脫語法字元。</li>
-    </ul>
+    <strong>看完這單元你應該能說出：</strong>
+    <ul><li>用反引號寫行內 code，用三個反引號寫程式碼區塊。</li><li>為程式碼區塊指定語言以取得語法高亮，並列出常見語言標記。</li><li>在程式碼區塊內安全顯示反引號與 HTML 特殊字元。</li><li>用 tab 縮排式區塊寫入純文字範例。</li></ul>
   </div>
 
   <h2>延伸閱讀</h2>
   <ul>
-    <li>下一篇：<a href="unit-05-tables-blockquote.html">單元 5 · 表格與進階區塊</a>。</li>
-    <li><a href="https://www.markdownguide.org/basic-syntax/#code" rel="noopener">Markdown Guide: Code</a>（英文）</li>
-  </ul>
+<li>上一篇：<a href="unit-03-links-images.html">單元 3 · 連結與圖片</a>。</li>
+<li>下一篇：<a href="unit-05-tables-blockquote.html">單元 5 · 表格與進階區塊</a>。</li>
+<li><a href="../glossary.html">術語表</a>：複習全站。</li>
+</ul>
 
-  <div class="next-prev">
+<div class="next-prev">
     <a href="unit-03-links-images.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 3 · 連結與圖片</div></a>
     <a class="np-next" href="unit-05-tables-blockquote.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 5 · 表格與進階區塊</div></a>
-  </div>
 </div>
-
-<footer>
-  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
-  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
-</footer>
-
 </div>
-</body>
-</html>
+<footer>這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span></footer>
+</div></body></html>

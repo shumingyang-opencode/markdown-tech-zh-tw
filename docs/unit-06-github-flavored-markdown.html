@@ -3,166 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>單元 6 · GitHub Flavored Markdown · Markdown 繁中教學站</title>
-<meta name="description" content="GitHub Flavored Markdown：任務清單、刪除線、自動連結、註腳與 emoji。">
+<title>單元 6 · GitHub Flavored Markdown · Markdown 繁體中文教學站</title>
+<meta name="description" content="Task list、刪除線、自動連結、footnote、emoji">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
 <div class="container">
-
 <header>
   <h1>單元 6 · GitHub Flavored Markdown</h1>
-  <p class="subtitle">GitHub 的 Markdown 擴充 — GFM</p>
+  <p class="subtitle">任務清單、刪除線、自動連結、註腳、emoji</p>
 </header>
-
 <nav class="topnav">
   <a href="../index.html">首頁</a>
   <a href="../map.html">概念地圖</a>
   <a href="../learning-path.html">學習路線</a>
-  <a href="index.html">單元教學</a>
+  <a href="../docs/index.html">單元教學</a>
+  <a href="../glossary.html">術語表</a>
   <a href="../about.html">關於</a>
-</nav>
-
-<div class="back-link"><a href="index.html">← 單元教學</a></div>
-
+</nav><div class="back-link"><a href="index.html">← 單元教學</a></div>
 <div class="guide">
+<h2>6.1 什麼是 GFM</h2>
+<p><strong>GitHub Flavored Markdown（GFM）</strong> 是 GitHub 在標準 Markdown 上擴充的方言，也是「在 GitHub 協作」的實際標準。它涵蓋：<strong>任務清單、刪除線、自動連結、表格（規範化）、註腳、emoji、內嵌 HTML、忽略 Markdown</strong>。</p>
+<div class="callout"><strong>為什麼重要：</strong>你在 GitHub 寫的 README、Issue、PR、Wiki 全部用 GFM。學會它等於學會「在 GitHub 溝通」。</div>
 
-  <p>
-    <strong>GitHub Flavored Markdown（GFM）</strong> 是 GitHub 在標準 Markdown 上擴充的版本，
-    也是你寫 README、Issue、Pull Request 時實際使用的語法。它的規格以
-    <a href="https://github.github.com/gfm/" rel="noopener">CommonMark</a> 為基礎，
-    並加上下面這些實用擴充。
-  </p>
+<h2>6.2 任務清單 · Task List</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>- [x] 完成安裝
+- [ ] 撰寫 README
+- [ ] 發佈 v1.0</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <input type="checkbox" checked disabled> 完成安裝<br><input type="checkbox" disabled> 撰寫 README<br><input type="checkbox" disabled> 發佈 v1.0
+  </div></div>
+</div>
+<div class="callout"><strong>注意：</strong>任務清單必須是<strong>清單的子項</strong>，<code>[ ]</code>（未勾）與 <code>[x]</code>（已勾）中間要空格。可巢狀（子任務）且可在 Issue/PR 中被 GitHub 自動統計。</div>
 
-  <h2>任務清單 · Task Lists</h2>
-  <p>在清單項目後方寫 <code>[ ]</code>（未完成）或 <code>[x]</code>（已完成），GitHub 會渲染成可勾選的 checkbox。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>- [x] 寫完 README
-- [x] 推上 GitHub
-- [ ] 等待 review</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <ul style="list-style:none;margin:0.2rem 0;">
-          <li>☑ 寫完 README</li>
-          <li>☑ 推上 GitHub</li>
-          <li>☐ 等待 review</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="callout">
-    <strong>實戰用法：</strong>Issue 內建「Task list」會顯示進度條；在 PR 描述列清單，還有
-    「將 Issue 標記為完成」的自動關聯功能。
-  </div>
+<h2>6.3 刪除線 · Strikethrough</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>~~舊方案~~ 已改為新方案</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render"><s>舊方案</s> 已改為新方案</div></div>
+</div>
 
-  <h2>刪除線 · Strikethrough</h2>
-  <p>用兩個波浪號 <code>~~</code> 包起來。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>~~這個方案已過時~~，請改用新版。</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p><s>這個方案已過時</s>，請改用新版。</p>
-      </div>
-    </div>
-  </div>
+<h2>6.4 自動連結 · Autolink</h2>
+<p>GFM 自動把 URL、<code>#issue</code>、<code>@mention</code>、commit SHA 轉成可點連結：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>網址 https://github.com 自動變連結。
+修復了 #123 的問題。
+感謝 @team 的協助。</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p>網址 <a href="https://github.com">https://github.com</a> 自動變連結。<br>修復了 <a href="#">#123</a> 的問題。<br>感謝 <a href="#">@team</a> 的協助。</p>
+  </div></div>
+</div>
 
-  <h2>自動連結 · Autolinks</h2>
-  <p>在 GitHub 上，網址會<strong>自動變成連結</strong>，不用尖括號。更棒的是「跨資源自動連結」：</p>
-  <div class="demo-block">
-    <div class="demo-label">自動連結規則 · AUTOLINKS</div>
-    <pre>https://github.com            # 網址自動成連結
-@shumingyang-opencode        # @mention 通知某人
-#42                          # 指到本 repo 的 Issue/PR 42
-shumingyang-opencode/repo#1  # 指到其他 repo 的 issue
-`gh-42` 等內嵌 code 也會連結    # issue/PR 自動連結</pre>
-  </div>
-  <div class="callout warn">
-    <strong>注意：</strong><code>#42</code> 只在你 repo 的上下文（README、Issue、PR）才有意義，
-    一般 markdown 檔案裡它只是普通文字。
-  </div>
+<h2>6.5 註腳與 emoji</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>這是有註腳[^1]的句子。
 
-  <h2>註腳 · Footnotes</h2>
-  <p>用 <code>[^1]</code> 標記、文末 <code>[^1]: 內容</code> 定義，適合補參考資料而不打斷正文。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>GFM 規格見[官方文件][^1]。
+[^1]: 註腳內容說明。
 
-[^1]: https://github.github.com/gfm/</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>GFM 規格見<a href="#">官方文件</a><sup>1</sup>。</p>
-        <hr style="border:none;border-top:1px solid #444;width:4rem;">
-        <p style="font-size:0.78rem;"><sup>1</sup> https://github.github.com/gfm/</p>
-      </div>
-    </div>
-  </div>
+發佈成功 :tada: :rocket:</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p>這是有註腳<sup>1</sup>的句子。<br>發佈成功 🎉 🚀</p>
+  </div></div>
+</div>
+<div class="callout info"><strong>Emoji 短碼：</strong><code>:tada:</code> <code>:rocket:</code> <code>:bug:</code> <code>:warning:</code> 等。支援不全的渲染器會原樣顯示短碼。</div>
 
-  <h2>Emoji</h2>
-  <p>用 <code>:名稱:</code> 語法插入表情符號（自動轉成 emoji）。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>:rocket: 發布成功！ :tada:</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>🚀 發布成功！ 🎉</p>
-      </div>
-    </div>
-  </div>
-  <p class="hint">完整清單可查 <a href="https://github.com/ikatyang/emoji-cheat-sheet" rel="noopener">Emoji Cheat Sheet</a>。</p>
+<h2>6.6 忽略 Markdown 語法（跳脫）</h2>
+<p>想在文件裡「顯示」Markdown 符號而非「觸發」它，用反斜線 <code>\</code> 跳脫：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>\*這不是斜體\*
+\# 這不是標題
+用 \` 顯示反引號</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p>*這不是斜體*<br># 這不是標題<br>用 ` 顯示反引號</p>
+  </div></div>
+</div>
 
-  <h2>其他 GFM 特色</h2>
-  <ul>
-    <li><strong>表格</strong>：GFM 引入表格語法（<a href="unit-05-tables-blockquote.html">單元 5</a>）。</li>
-    <li><strong>Fenced code blocks</strong>：三反引號區塊與語法高亮是 GFM 引入（<a href="unit-04-code.html">單元 4</a>）。</li>
-    <li><strong>&lt;details&gt; / &lt;summary&gt;</strong>：摺疊區塊，常用於「藏住長內容」。</li>
-    <li><strong>數學式</strong>：<code>$$</code> 包住的 LaTeX 數學（repo 內的 README 支援）。</li>
-    <li><strong>Mermaid 圖表</strong>：在 code block 標 <code>mermaid</code> 可畫圖（單元 7）。</li>
-  </ul>
+<h2>6.7 Worked Example：Issue 模板</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>## 問題描述
+- [ ] 已搜尋現有 issue
+
+**重現步驟**
+1. 開啟設定
+2. 點擊「儲存」
+
+**期望**：儲存成功
+**實際**：`Error 500`
+
+版本 :bug: v1.2.0
+參考 : #45 #88</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p style="font-weight:700;">問題描述</p>
+    <input type="checkbox" disabled> 已搜尋現有 issue
+    <p style="font-weight:700;">重現步驟</p><ol style="margin:0.2rem 0 0.3rem 1.4rem;"><li>開啟設定</li><li>點擊「儲存」</li></ol>
+    <p><strong>期望</strong>：儲存成功<br><strong>實際</strong>：<code>Error 500</code></p>
+    <p>版本 🐛 v1.2.0<br>參考 : #45 #88</p>
+  </div></div>
+</div>
+<p>練習：寫一份「功能請求」Issue 模板——含標題、目標、方案、驗收清單（任務清單）。</p>
 
   <div class="outcome">
-    <strong>看完這頁你應該能說出：</strong>
-    <ul>
-      <li>任務清單的寫法與它在 Issue/PR 的實戰用途。</li>
-      <li>刪除線 <code>~~</code> 與 emoji <code>:名稱:</code>。</li>
-      <li>自動連結的三種形式：網址、<code>@mention</code>、<code>#issue</code>。</li>
-      <li>註腳的標記與定義兩段式寫法。</li>
-      <li>GFM 在 GitHub 協作裡的角色。</li>
-    </ul>
+    <strong>看完這單元你應該能說出：</strong>
+    <ul><li>寫出任務清單、刪除線、自動連結、註腳與 emoji。</li><li>解釋 GFM 在 GitHub 場景的實際用途（README/Issue/PR）。</li><li>使用 HTML 內嵌與忽略 Markdown 語法（\ 跳脫）。</li><li>理解 GFM 表格與標準 Markdown 表格的差異。</li></ul>
   </div>
 
   <h2>延伸閱讀</h2>
   <ul>
-    <li>下一篇：<a href="unit-07-markdown-ecosystem.html">單元 7 · Markdown 生態系</a>——把語法用到真實場景。</li>
-    <li><a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 官方規格</a></li>
-    <li><a href="https://docs.github.com/en/get-started/writing-on-github" rel="noopener">GitHub Docs: Writing on GitHub</a></li>
-  </ul>
+<li>上一篇：<a href="unit-05-tables-blockquote.html">單元 5 · 表格與進階區塊</a>。</li>
+<li>下一篇：<a href="unit-07-markdown-ecosystem.html">單元 7 · Markdown 生態系</a>。</li>
+<li><a href="../glossary.html">術語表</a>：複習全站。</li>
+</ul>
 
-  <div class="next-prev">
+<div class="next-prev">
     <a href="unit-05-tables-blockquote.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 5 · 表格與進階區塊</div></a>
     <a class="np-next" href="unit-07-markdown-ecosystem.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 7 · Markdown 生態系</div></a>
-  </div>
 </div>
-
-<footer>
-  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
-  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
-</footer>
-
 </div>
-</body>
-</html>
+<footer>這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span></footer>
+</div></body></html>

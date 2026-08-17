@@ -3,197 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>單元 5 · 表格與進階區塊 · Markdown 繁中教學站</title>
-<meta name="description" content="Markdown 表格、引用區塊、分隔線與內嵌 HTML。">
+<title>單元 5 · 表格與進階區塊 · Markdown 繁體中文教學站</title>
+<meta name="description" content="表格、引用區塊、分隔線、內嵌 HTML">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
 <div class="container">
-
 <header>
   <h1>單元 5 · 表格與進階區塊</h1>
-  <p class="subtitle">表格、引用區塊、分隔線與內嵌 HTML — Tables &amp; Blocks</p>
+  <p class="subtitle">表格、引用、分隔線、內嵌 HTML</p>
 </header>
-
 <nav class="topnav">
   <a href="../index.html">首頁</a>
   <a href="../map.html">概念地圖</a>
   <a href="../learning-path.html">學習路線</a>
-  <a href="index.html">單元教學</a>
+  <a href="../docs/index.html">單元教學</a>
+  <a href="../glossary.html">術語表</a>
   <a href="../about.html">關於</a>
-</nav>
-
-<div class="back-link"><a href="index.html">← 單元教學</a></div>
-
+</nav><div class="back-link"><a href="index.html">← 單元教學</a></div>
 <div class="guide">
-
-  <h2>表格 · Tables</h2>
-  <p>表格是 GitHub Flavored Markdown 的擴充語法（標準 Markdown 沒有）。用 <code>|</code> 分隔欄位，第二行放「表頭分隔線」。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>| 水果 | 價格 | 產地 |
-|------|------|------|
-| 蘋果 | 30   | 日本 |
-| 香蕉 | 25   | 台灣 |</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <table>
-          <tr><th>水果</th><th>價格</th><th>產地</th></tr>
-          <tr><td>蘋果</td><td>30</td><td>日本</td></tr>
-          <tr><td>香蕉</td><td>25</td><td>台灣</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <h3>欄位對齊 · Alignment</h3>
-  <p>在表頭分隔線的冒號位置控制對齊：<code>:---</code> 靠左、<code>---:</code> 靠右、<code>:---:</code> 置中。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>| 靠左 | 置中 | 靠右 |
+<h2>5.1 表格 · Tables</h2>
+<p>表格用 <code>|</code> 分隔欄位，第二行用 <code>---</code> 標示表頭，並可設定對齊：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>| 名稱 | 預設 | 說明 |
 |:-----|:----:|-----:|
-| 1    | 2    | 3    |</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <table>
-          <tr><th style="text-align:left;">靠左</th><th style="text-align:center;">置中</th><th style="text-align:right;">靠右</th></tr>
-          <tr><td style="text-align:left;">1</td><td style="text-align:center;">2</td><td style="text-align:right;">3</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="callout info">
-    <strong>提醒：</strong>表格分隔線的 <code>-</code> 至少要一個；表格內若要顯示 <code>|</code>，用 <code>\|</code> 跳脫。
-    每列欄位數最好一致，否則渲染會怪怪的。
-  </div>
+| host | localhost | 主機 |
+| port | 8080 | 連接埠（置中） |
+| log  | auto | 日誌（靠右） |</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <table style="font-size:0.8rem;"><tr><th style="text-align:left">名稱</th><th style="text-align:center">預設</th><th style="text-align:right">說明</th></tr>
+    <tr><td style="text-align:left">host</td><td style="text-align:center">localhost</td><td style="text-align:right">主機</td></tr>
+    <tr><td style="text-align:left">port</td><td style="text-align:center">8080</td><td style="text-align:right">連接埠（置中）</td></tr>
+    <tr><td style="text-align:left">log</td><td style="text-align:center">auto</td><td style="text-align:right">日誌（靠右）</td></tr></table>
+  </div></div>
+</div>
+<p><strong>對齊語法</strong>：<code>:---</code> 靠左、<code>:---:</code> 置中、<code>---:</code> 靠右。</p>
+<div class="callout warn"><strong>表格內的特殊字元：</strong>管道符 <code>|</code> 需寫成 <code>\|</code>；程式碼用 <code>`</code> 包住；換行可用 <code>&lt;br&gt;</code>。表格是 GFM 語法（標準 Markdown 不支援）。</div>
 
-  <h2>引用區塊 · Blockquotes</h2>
-  <p>用 <code>&gt;</code> 開頭。常用來放引言、重點、或「引用他人意見」。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>&gt; 這是引用。
+<h2>5.2 引用區塊 · Blockquotes</h2>
+<p>用 <code>&gt;</code> 開頭；巢狀引用用多個 <code>&gt;&gt;</code>；區塊內可放清單、段落與程式碼：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>&gt; 這是引用。
 &gt;
-&gt; &gt; 巢狀引用也可以。
+&gt; - 引用內清單
+&gt;
+&gt; &gt; 巢狀引用
+&gt;
+&gt; ```js
+&gt; const x = 1;
+&gt; ```</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <blockquote style="border-left:3px solid var(--cyan);padding-left:0.8rem;color:var(--text-soft);">
+      這是引用。<ul style="margin:0.2rem 0 0.2rem 1.2rem;"><li>引用內清單</li></ul>
+      <blockquote style="border-left:2px solid var(--fuchsia);padding-left:0.8rem;color:var(--text-muted);">巢狀引用</blockquote>
+      <pre style="background:#0b0b11;border-radius:6px;padding:0.5rem 0.7rem;font-size:0.75rem;">const x = 1;</pre>
+    </blockquote>
+  </div></div>
+</div>
+<div class="callout"><strong>引用內換行：</strong>每一行都要以 <code>&gt;</code> 開頭；空行也要 <code>&gt;</code>（否則引用結束）。</div>
 
-一般段落。</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <blockquote style="border-left:3px solid #fbbf24;padding-left:0.8rem;margin:0.3rem 0;">
-          這是引用。<br><br>
-          <blockquote style="border-left:3px solid #fbbf24;padding-left:0.8rem;margin:0.3rem 0;">巢狀引用也可以。</blockquote>
-        </blockquote>
-        <p>一般段落。</p>
-      </div>
-    </div>
-  </div>
-
-  <h2>分隔線 · Horizontal Rules</h2>
-  <p>三個以上的 <code>-</code>、<code>*</code>、<code>_</code> 都能畫出水平線。注意：上面要有空行，否則 <code>-</code> 會被當成二級標題或清單。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>第一章
+<h2>5.3 分隔線 · Horizontal Rule</h2>
+<p>三個以上的 <code>---</code>、<code>***</code> 或 <code>___</code>（中間可留空格）：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>上面一段
 
 ---
 
-第二章</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>第一章</p>
-        <hr style="border:none;border-top:1px solid #444;">
-        <p>第二章</p>
-      </div>
-    </div>
-  </div>
-  <div class="callout warn">
-    <strong>常見陷阱：</strong>在標題下面緊接著寫 <code>---</code> 會被當成「二級標題」。
-    段落後面連續 <code>---</code> 則可能被當成清單。保險起見，分隔線前後都留空行。
-  </div>
+下面一段</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p>上面一段</p><hr><p>下面一段</p>
+  </div></div>
+</div>
+<div class="callout warn"><strong>避免誤判：</strong><code>---</code> 若緊跟在文字下一行（無空行），會被當成「二級標題」而非分隔線。要當分隔線時，前面務必留空行。</div>
 
-  <h2>內嵌 HTML · Inline HTML</h2>
-  <p>Markdown 遇到不認識的語法就直接放行——你可以嵌入 HTML 做到「更精細的排版」。例如 <code>&lt;details&gt;</code> 摺疊區塊、<code>&lt;div&gt;</code> 分欄。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>&lt;details&gt;
-&lt;summary&gt;點開看更多&lt;/summary&gt;
+<h2>5.4 內嵌 HTML</h2>
+<p>需要進階排版（顏色、摺疊、影片、表格欄合併）時，直接寫 HTML——GFM 允許：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>&lt;details&gt;
+  &lt;summary&gt;點我展開&lt;/summary&gt;
+  摺疊內容
+&lt;/details&gt;
 
-摺疊的內容，**還可以用 Markdown**。
+&lt;p style="color: var(--fuchsia)"&gt;彩色文字&lt;/p&gt;</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <details><summary>點我展開</summary>摺疊內容</details>
+    <p style="color:#e879f9;">彩色文字</p>
+  </div></div>
+</div>
+<div class="callout info"><strong>安全注意：</strong>GitHub 會過濾危險 HTML（script、onload 等）。可用的多為展示性標籤（details、table、img、a）。</div>
 
-&lt;/details&gt;</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <details>
-          <summary style="cursor:pointer;">點開看更多</summary>
-          <p>摺疊的內容，<strong>還可以用 Markdown</strong>。</p>
-        </details>
-      </div>
-    </div>
-  </div>
-  <div class="callout">
-    <strong>原則：</strong>先想清楚 Markdown 能不能達成，不能再用 HTML。
-    保持原始檔可讀性，是 Markdown 的初衷。
-  </div>
+<h2>5.5 Worked Example：設定文件</h2>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre># 設定說明
 
-  <h2>HTML 註解 · Comments</h2>
-  <p>想在原始檔留話給自己、但不要顯示給讀者看，用 HTML 註解。</p>
-  <div class="demo-grid">
-    <div class="demo-block">
-      <div class="demo-label">原始碼 · SOURCE</div>
-      <pre>&lt;!-- TODO: 補上參考來源 --&gt;
+| 鍵 | 值 | 說明 |
+|---|----|------|
+| server.port | 8080 | HTTP 埠 |
+| server.tls | true | 啟用 TLS |
 
-這段會顯示。</pre>
-    </div>
-    <div class="demo-block">
-      <div class="demo-label">渲染結果 · RENDERED</div>
-      <div class="demo-render">
-        <p>這段會顯示。（第一行註解不會出現）</p>
-      </div>
-    </div>
-  </div>
+&gt; 修改後請重啟服務。
+
+---
+
+詳見 [完整文件](docs/advanced.md)。</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p style="font-weight:700;">設定說明</p>
+    <table style="font-size:0.8rem;"><tr><th>鍵</th><th>值</th><th>說明</th></tr><tr><td>server.port</td><td>8080</td><td>HTTP 埠</td></tr><tr><td>server.tls</td><td>true</td><td>啟用 TLS</td></tr></table>
+    <blockquote style="border-left:3px solid var(--cyan);padding-left:0.8rem;color:var(--text-soft);">修改後請重啟服務。</blockquote>
+    <hr><p>詳見 <a href="docs/advanced.md">完整文件</a>。</p>
+  </div></div>
+</div>
+<p>練習：做一張「錯誤碼」對照表（代碼 / 意義 / 處理方式），並在下方加一段注意事項引用。</p>
 
   <div class="outcome">
-    <strong>看完這頁你應該能說出：</strong>
-    <ul>
-      <li>表格的三段結構：表頭、分隔線、資料列。</li>
-      <li>如何用冒號控制欄位對齊。</li>
-      <li>引用區塊 <code>&gt;</code> 與巢狀引用。</li>
-      <li>分隔線前後要空行，避免被誤判。</li>
-      <li>何時該內嵌 HTML 兜底。</li>
-    </ul>
+    <strong>看完這單元你應該能說出：</strong>
+    <ul><li>寫出含表頭、對齊、合併文字的表格。</li><li>寫出引用區塊與巢狀引用，並結合清單/程式碼。</li><li>說明分隔線的寫法與避免被誤判為標題的方法。</li><li>使用內嵌 HTML（如 details/summary）補足 Markdown 不足。</li></ul>
   </div>
 
   <h2>延伸閱讀</h2>
   <ul>
-    <li>下一篇：<a href="unit-06-github-flavored-markdown.html">單元 6 · GitHub Flavored Markdown</a>——GitHub 專屬擴充。</li>
-    <li><a href="https://www.markdownguide.org/extended-syntax/#tables" rel="noopener">Markdown Guide: Tables</a>（英文）</li>
-  </ul>
+<li>上一篇：<a href="unit-04-code.html">單元 4 · 程式碼</a>。</li>
+<li>下一篇：<a href="unit-06-github-flavored-markdown.html">單元 6 · GitHub Flavored Markdown</a>。</li>
+<li><a href="../glossary.html">術語表</a>：複習全站。</li>
+</ul>
 
-  <div class="next-prev">
+<div class="next-prev">
     <a href="unit-04-code.html"><div class="np-label">← 上一篇</div><div class="np-name">單元 4 · 程式碼</div></a>
     <a class="np-next" href="unit-06-github-flavored-markdown.html"><div class="np-label">下一篇 →</div><div class="np-name">單元 6 · GitHub Flavored Markdown</div></a>
-  </div>
 </div>
-
-<footer>
-  這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
-  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span>
-</footer>
-
 </div>
-</body>
-</html>
+<footer>這是 Markdown 繁體中文教學站 · 由 OpenCode 建置<br>
+  <span class="footer-license">本站教學內容（繁體中文解說）為本站原創，採 CC-BY-4.0；英文術語與語法示範引用自 <a href="https://daringfireball.net/projects/markdown/" rel="noopener">Markdown 官方規格</a>與 <a href="https://github.github.com/gfm/" rel="noopener">GitHub Flavored Markdown 規格</a>。</span></footer>
+</div></body></html>
