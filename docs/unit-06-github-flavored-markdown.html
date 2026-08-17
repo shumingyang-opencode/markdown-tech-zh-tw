@@ -179,6 +179,91 @@
 <div class="callout"><strong>挑戰 2：</strong>在同一份文件中混合使用 GFM 的所有擴充語法：任務清單、刪除線、自動連結、emoji 短碼、表格、腳註。然後把這份文件分別在 GitHub 和一個不支援 GFM 的 Markdown 編輯器中預覽，記錄渲染差異。</div>
 <div class="callout"><strong>挑戰 3：</strong>寫一份「GFM vs Standard Markdown vs CommonMark」的三方比較表格（至少 7 個比較維度），用參照式連結分別連結到三份規範文件。然後在文末加一個腳註說明你的偏好。</div>
 
+  <hr>
+<h2>① 專案級端到端 Worked Example</h2>
+<h3>專案：開源專案協作範本 — 一份 repo 從 README 到 Issue/PR 模板的完整 GFM 套件</h3>
+<p>開源專案的每一面（README、Issue、PR、CHANGELOG）都是用 GFM 溝通的介面。這個專案把 GFM 的任務清單、自動連結、@mention、表格全部整合成一套「協作入門包」。</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">產出檔案樹 · FILE TREE</div><pre>awesome-tool/
+├── README.md
+├── CONTRIBUTING.md     ← 本篇重點（任務清單）
+├── ISSUE_TEMPLATE/
+│   ├── bug_report.md
+│   └── feature_request.md
+├── PULL_REQUEST_TEMPLATE.md
+├── CHANGELOG.md
+└── .github/
+    └── dependabot.yml</pre></div>
+  <div class="demo-block"><div class="demo-label">bug_report.md · KEY FILE</div><pre>## 問題描述
+- [ ] 已搜尋現有 issue（#102 相關）
+
+**重現步驟**
+1. 執行 `awesome-tool run`
+2. 觀察 `Error 500`
+
+**環境**：macOS 14 · v1.2.0 :bug:
+
+**預期**：正常輸出
+**實際**：拋出例外
+
+相關：@maintainer 請協助分類。</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">CONTRIBUTING.md · KEY FILE</div><pre># 貢獻指南
+
+## 第一次貢獻
+- [ ] Fork 並 clone
+- [ ] 建立分支
+- [ ] 撰寫測試
+- [ ] 發 PR（closes #N）
+
+## 程式碼風格
+| 項目 | 規範 |
+|:-----|:-----|
+| 縮排 | 2 空格 |
+| 命名 | camelCase |
+
+> ⚠️ PR 未通過 CI 不會被合併。</pre></div>
+  <div class="demo-block"><div class="demo-label">驗證 · VERIFY (GitHub)</div><div class="demo-render">
+    <p>✅ 任務清單在 Issue 顯示進度條<br>✅ <code>#102</code>、<code>@maintainer</code> 自動變連結<br>✅ PR body 的 <code>closes #N</code> 合併時自動關閉 issue<br>✅ 表格在 README 中正確對齊渲染</p>
+  </div></div>
+</div>
+<p><strong>為什麼這是「專案級」：</strong>單一文件的 GFM 語法很容易，難的是「整 repo 的溝通用語一致」——Issue 模板確保每份 bug report 結構相同、CHANGELOG 讓每個版本都有可比性。這是一套「用 GFM 規範協作文化」的系統。</p>
+<div class="callout info"><strong>與第 1 輪範例的層級差異：</strong>第 1 輪是「一份 Release Notes」；這裡是「整個 repo 從第一天就用 GFM 定義好協作介面」——模板即文件、文件即規範。</div>
+
+<h2>② 效能/品質/安全深度</h2>
+<h3>本單元主題：品質 — GFM 跨平台渲染一致性</h3>
+<p>GFM 是 GitHub 的方言——同一份文件在 GitLab、VS Code 預覽、GitBook 上渲染結果可能不同：</p>
+<ul>
+<li><strong>表格</strong>：GFM 表格被 GitLab、VS Code 支援，但傳統 Markdown 與部分編輯器不支援。</li>
+<li><strong>註腳</strong>：<code>[^1]</code> 在 GitHub 支援，但 VS Code 預覽與多數編輯器不支援——會顯示原文。</li>
+<li><strong>任務清單</strong>：<code>- [x]</code> 在 GitHub 渲染為可點擊 checkbox，其他平台多為純文字。</li>
+<li><strong>策略</strong>：需要跨平台的文件，用「CommonMark + GFM 交集」寫法（Core Syntax + 表格），並在 README 標明目標平台。</li>
+</ul>
+<div class="callout warn"><strong>一致性檢查：</strong>同一份文件至少在「GitHub + 你常用的本地預覽器」各渲染一次並對照。把「哪裡支援、哪裡不支援」寫進團隊的風格指南，比事後逐篇修還有效率。</div>
+
+<h2>③ 站際比較對照表</h2>
+<p>以「協作標記能力」為主題：</p>
+<table>
+<tr><th>面向</th><th>markdown</th><th>yaml</th><th>json</th><th>github</th><th>gitlab</th></tr>
+<tr><td>任務追蹤</td><td>任務清單 <code>- [x]</code></td><td>無</td><td>無</td><td>Issue/Milestone</td><td>Issue/Milestone</td></tr>
+<tr><td>提及/連結</td><td>GFM 自動連結</td><td>無</td><td>無</td><td><code>@mention</code> 原生</td><td><code>@mention</code> 原生</td></tr>
+<tr><td>自動關閉</td><td>無</td><td>無</td><td>無</td><td><code>closes #N</code></td><td><code>closes #N</code></td></tr>
+<tr><td>進度統計</td><td>任務清單比例</td><td>無</td><td>無</td><td>原生 progress</td><td>原生 progress</td></tr>
+<tr><td>本單元重點</td><td>GFM 擴充語法</td><td>設定檔結構</td><td>資料結構</td><td>平台原生協作</td><td>平台原生協作</td></tr>
+</table>
+
+<h2>④ 互動式檢核清單</h2>
+<p>進階驗收——每項都牽涉其他單元的能力：</p>
+<div class="demo-render">
+<input type="checkbox" disabled> 能為自己的 repo 建立 Issue 模板 + PR 模板並用任務清單規範結構（本單元 + 單元 8）<br>
+<input type="checkbox" disabled> 能說出 GFM 表格/註腳/任務清單在非 GitHub 平台的降級行為（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 已在 CHANGELOG 中正確使用 <code>#issue</code> 與 <code>@mention</code>（本單元 + 單元 3）<br>
+<input type="checkbox" disabled> 能撰寫「CommonMark 子集」文件以相容多平台（本單元 + 單元 1）<br>
+<input type="checkbox" disabled> 已用 emoji 短碼或 Unicode 提供一致的視覺標記（本單元 + 單元 2）<br>
+<input type="checkbox" disabled> 能設計一份含任務清單的 Sprint/Release 追蹤文件（本單元 + 單元 7）<br>
+</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-05-tables-blockquote.html">單元 5 · 表格與進階區塊</a>。</li>

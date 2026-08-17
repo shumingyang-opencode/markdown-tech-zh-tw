@@ -160,6 +160,90 @@ architecture.svg</pre>
 <div class="callout"><strong>挑戰 2：</strong>為你自己的 repo 寫一份 README，裡面包含：至少 3 個參照式連結（定義放在文末）、2 個巢狀圖片連結（徽章）、1 個相對路徑連結到本地文件、1 個外部絕對連結。然後在另一個 .md 檔中參照同一個 ID，驗證參照式連結的「改一處、全部更新」特性。</div>
 <div class="callout"><strong>挑戰 3：</strong>寫一個 shell script，自動掃描指定 .md 檔中的所有相對路徑圖片連結，檢查檔案是否存在，不存在的輸出警告。提示：<code>grep</code> 提取路徑 → <code>test -f</code> 檢查。</div>
 
+  <hr>
+<h2>① 專案級端到端 Worked Example</h2>
+<h3>專案：個人技術部落格 — 圖片資產管理 + 連結健康自動化</h3>
+<p>部落格是「連結 + 圖片 + 相對路徑」的大宗使用場景。這個專案把本單元語法提升為一套系統：統一圖片資產、參照式連結管理、CI 自動檢查連結與圖片是否存活。</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">產出檔案樹 · FILE TREE</div><pre>blog/
+├── README.md
+├── content/posts/
+│   └── 2026-08-17-first-post.md
+├── public/images/
+│   ├── hero.png        ← 統一圖片資產
+│   └── diagrams/
+├── scripts/
+│   ├── check-links.sh  ← 檢查內部資源
+│   └── optimize-images.sh
+└── .github/workflows/
+    └── post-check.yml  ← 每次 PR 自動檢查</pre></div>
+  <div class="demo-block"><div class="demo-label">文章 · POST (節錄)</div><pre>---
+title: 我的第一篇文章
+date: 2026-08-17
+---
+
+![封面](images/hero.png)
+
+詳見[官方文件](https://example.com/docs)，
+或先讀[入門指南][guide]。
+
+[guide]: https://example.com/guide
+</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">check-links.sh · KEY FILE</div><pre>#!/bin/bash
+# 檢查所有本地圖片與 .md 內部連結是否存在
+grep -rhoP '(?&lt;=\()([^)]+\.(png|jpg|svg|md))' content/ \
+  | sort -u | while read -r p; do
+  [ -f "content/$p" ] || [ -f "public/$p" ] || echo "❌ 缺少: $p"
+done
+echo "✅ 內部資源檢查完成"</pre></div>
+  <div class="demo-block"><div class="demo-label">驗證命令與輸出 · VERIFY</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">$ ./scripts/check-links.sh
+✅ 內部資源檢查完成
+
+$ npx markdown-link-check content/**/*.md
+[✓] https://example.com/docs       200
+[✓] https://example.com/guide      200
+✅ 外部連結 2/2 存活</pre>
+  </div></div>
+</div>
+<p><strong>為什麼這是「專案級」：</strong>單一文章的連結不會壞，但 50 篇文章、400 張圖的部落格一定會壞。這套系統用「參照式連結集中定義 + 相對路徑統一基準 + CI 自動檢查」三個機制，讓連結健康成為可自動驗證的常態，而不是靠作者事後人工巡。</p>
+<div class="callout info"><strong>與第 1 輪範例的層級差異：</strong>第 1 輪是「掃一次看看壞了哪些」；這裡是把「掃描 → 檢查 → 擋在合併前」變成每次 PR 都會執行的系統化流程。</div>
+
+<h2>② 效能/品質/安全深度</h2>
+<h3>本單元主題：安全 — 連結與圖片的注入與釣魚防護</h3>
+<p>連結與圖片是 Markdown 中「最容易被惡意利用」的語法，因為它們把「外部內容」拉進你的頁面：</p>
+<ul>
+<li><strong>釣魚連結</strong>：顯示文字與實際 URL 不符（<code>[google.com](https://evil.example)</code>）。撰寫時誠實，閱讀時確認。</li>
+<li><strong>偽協定</strong>：<code>[x](javascript:alert(1))</code>。多數現代渲染器已擋掉 <code>javascript:</code>，但自製渲染器需自行過濾。</li>
+<li><strong>圖片載入器注入</strong>：<code>![x](img "onerror=...")</code> 或直接寫 <code>&lt;img onerror&gt;</code>。GitHub 會消毒，但自建站不會。</li>
+<li><strong>追蹤與隱私</strong>：第三方圖床（如 tracking pixel）會記錄閱讀行為。敏感文件避免外部資源。</li>
+</ul>
+<div class="callout warn"><strong>實務準則：</strong>對「不可信來源」的 Markdown（使用者投稿、Issue 內容）一律先過 sanitizer（如 DOMPurify），並對 URL 做協議白名單（http/https only）。對「可信作者」的文件則以「誠實撰寫 + 審查」為主。</div>
+
+<h2>③ 站際比較對照表</h2>
+<p>以「資源參照（連結/引用）」為主題：</p>
+<table>
+<tr><th>面向</th><th>markdown</th><th>yaml</th><th>json</th><th>github</th><th>gitlab</th></tr>
+<tr><td>連結外部資源</td><td><code>[文字](URL)</code></td><td>URL 字串值</td><td>URL 字串值</td><td>自動連結 + <code>#issue</code></td><td>自動連結 + <code>#issue</code></td></tr>
+<tr><td>圖片嵌入</td><td><code>![alt](URL)</code></td><td>無原生</td><td>data URI / 欄位</td><td>支援 + 尺寸控制</td><td>支援</td></tr>
+<tr><td>引用他人內容</td><td>參照式連結 <code>[a][id]</code></td><td>YAML anchor <code>&amp;</code></td><td><code>$ref</code>（JSON Schema）</td><td>PR/Issue 互相引用</td><td>Issue 互相引用</td></tr>
+<tr><td>相對路徑</td><td>支援（可攜）</td><td>支援（需解析）</td><td>不支援（用絕對 URL）</td><td>以 repo 根為基準</td><td>以 repo 根為基準</td></tr>
+<tr><td>本單元重點</td><td>行內/參照/圖片/路徑</td><td>錨點與別名</td><td>引用與嵌套結構</td><td>自動連結語法</td><td>自動連結語法</td></tr>
+</table>
+
+<h2>④ 互動式檢核清單</h2>
+<p>進階驗收——每項都牽涉其他單元的能力：</p>
+<div class="demo-render">
+<input type="checkbox" disabled> 能為自己的 repo 建立「集中定義的參照式連結」區塊並在 CI 檢查存活（本單元 + 單元 8）<br>
+<input type="checkbox" disabled> 圖片全部使用相對路徑並統一放 assets/ 目錄，路徑以 repo 根為基準（本單元 + 單元 1）<br>
+<input type="checkbox" disabled> 能寫出巢狀圖片連結（徽章）並解釋其渲染順序（本單元 + 單元 4）<br>
+<input type="checkbox" disabled> 能識別並修正釣魚連結與 <code>javascript:</code> 偽協定（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 已為使用者投稿類內容設定 sanitizer 與 URL 白名單（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 能寫 script 檢查站內所有圖片的相對路徑是否存在（本單元 + 單元 6）<br>
+</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-02-basic-syntax.html">單元 2 · 基礎語法</a>。</li>

@@ -200,6 +200,89 @@ echo "總金額 $(awk -F',' '{s+=$4} END{printf "$%,d", s}' anomalies.csv)"</pre
 <div class="callout"><strong>挑戰 2：</strong>用 Markdown 寫一份「比較三種程式語言」的文件，每種語言用一個 H2 標題，下方放一個特性對比表格（至少 5 列 4 欄），表格後接一段引用區塊寫你的推薦理由。練習標題、表格、引用三種語法的組合。</div>
 <div class="callout"><strong>挑戰 3：</strong>故意寫一份「有 5 處常見錯誤」的 Markdown 文件（缺空行、底線強調、分隔線缺空行等），然後寫出對應的修正版，並在每個修正旁用引用區塊說明為什麼原本是錯的。</div>
 
+  <hr>
+<h2>① 專案級端到端 Worked Example</h2>
+<h3>專案：個人知識庫（Obsidian Vault）— 從零建立一套可版本控制的筆記系統</h3>
+<p>這個專案把本單元的「標題層級、強調、段落、有序/無序/巢狀清單、分隔線」全部用在真實場景：一套每天使用的筆記系統。結構越正確，未來的自己越容易找、機器越好搜。</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">產出檔案樹 · FILE TREE</div><pre>vault/
+├── README.md            ← 知識庫導覽（H1 唯一）
+├── 001-入門.md          ← 本篇重點
+├── 002-進階.md
+├── 003-專案筆記.md
+└── templates/
+    └── 每日筆記.md     ← 範本：標題 + 清單結構</pre></div>
+  <div class="demo-block"><div class="demo-label">001-入門.md · KEY FILE</div><pre># 知識庫入門
+
+**目標：** 用 Markdown 管理所有長期筆記。
+
+## 為什麼選純文字
+- 永不壞檔
+- 版本控制友善
+- 任何裝置可開
+
+## 今日任務
+1. 建立第一個筆記
+   1. 取檔名
+   2. 寫唯一的 H1
+2. 建立每日範本
+
+---
+
+明天繼續：**雙向連結**。</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">驗證命令 · VERIFY</div><pre>$ markdownlint "vault/**/*.md"
+✅ 6 個檔案、0 error
+
+# 每個檔案只能有一個 H1
+$ awk '/^# /{c++} END{print "H1 數量:", c}' 001-入門.md
+H1 數量: 1
+
+# 追蹤筆記的演進
+$ git log --oneline --follow 001-入門.md
+f1a2b3c 加入雙向連結章節
+d4e5f6a 初版知識庫</pre></div>
+  <div class="demo-block"><div class="demo-label">拆解 · ANATOMY</div><div class="demo-render">
+    <p>① 唯一 H1 = 文件主題<br>② 粗體標出「目標」與「雙向連結」<br>③ 無序清單 → 特點；有序清單 → 步驟<br>④ 巢狀有序清單 = 子步驟<br>⑤ <code>---</code> 分隔「今天」與「明天」</p>
+  </div></div>
+</div>
+<p><strong>為什麼這是「專案級」：</strong>知識庫不是一份文件，而是一套「以正確結構運作」的系統——唯一的 H1 讓搜尋與連結有穩定錨點，統一的清單縮排讓渲染永不跑版，而版本控制讓筆記可以回溯。這些都是本單元語法在「系統規模」下的組合運用。</p>
+<div class="callout info"><strong>延伸：</strong>Obsidian 的 <code>[[雙向連結]]</code> 是方言擴充（單元 6/7 會談到），但底層的標題與清單永遠是標準 CommonMark——先學好基礎，擴充只是加分。</div>
+
+<h2>② 效能/品質/安全深度</h2>
+<h3>本單元主題：效能 — 大型文件的解析與渲染效能</h3>
+<p>Markdown 解析大致是線性的，但某些結構會讓成本暴漲：</p>
+<ul>
+<li><strong>巢狀深度</strong>：每多一層巢狀清單，AST 與 DOM 深度 +1。超過 6-8 層時，遞迴解析與瀏覽器排版都會明顯變慢——把巢狀壓在 3 層內。</li>
+<li><strong>單檔大小</strong>：一個 10 萬行的 .md 檔，行內解析（強調、連結的貪婪匹配）會吃掉大量 CPU。實務上單檔以 300-500 行為佳，長內容拆成多檔。</li>
+<li><strong>行內 token 數量</strong>：一段文字內塞太多 <code>**</code>、<code>[links]</code>、<code>`code`</code>，token 數目爆量，可讀性也差——濃縮表達。</li>
+<li><strong>實測參考</strong>：markdown-it 對一般文件約每秒數 MB，但如果文件含「長段落 + 大量行內標記」，可能退化為接近二次方。</li>
+</ul>
+<div class="callout warn"><strong>效能與結構是同一件事：</strong>效能建議（少巢狀、短段落、拆檔）恰好也是文件品質建議。如果你發現某個 .md 渲染很慢，先檢查結構——不是換渲染器。</div>
+
+<h2>③ 站際比較對照表</h2>
+<p>以「結構化層級（標題/清單/巢狀）」為主題：</p>
+<table>
+<tr><th>面向</th><th>markdown</th><th>yaml</th><th>json</th><th>github</th><th>gitlab</th></tr>
+<tr><td>層級標記</td><td><code>#</code> 標題 + 縮排清單</td><td>縮排（2 或 4 格）</td><td>物件巢狀 <code>{}</code></td><td>Issue/Milestone 分層</td><td>Epic/Issue 分層</td></tr>
+<tr><td>巢狀容錯</td><td>高（自動修正縮排）</td><td>中（縮排錯誤即失敗）</td><td>低（少一個括號全壞）</td><td>高</td><td>高</td></tr>
+<tr><td>順序表達</td><td>有序清單自動編號</td><td>序列（- 清單）</td><td>陣列</td><td>里程碑順序</td><td>里程碑順序</td></tr>
+<tr><td>讀者體驗</td><td>原始檔即結構</td><td>設定檔可讀</td><td>機器優先、人難讀</td><td>視覺化追蹤</td><td>視覺化追蹤</td></tr>
+<tr><td>本單元重點</td><td>六級標題與各類清單</td><td>資料層級的縮排規則</td><td>資料層級的巢狀結構</td><td>Issue/PR 的標題慣例</td><td>Issue/PR 的標題慣例</td></tr>
+</table>
+
+<h2>④ 互動式檢核清單</h2>
+<p>進階驗收——每項都牽涉其他單元的能力：</p>
+<div class="demo-render">
+<input type="checkbox" disabled> 能寫出一份「H1 唯一、H2 分章、巢狀清單 ≤ 3 層」的文件並通過 markdownlint（本單元 + 單元 8）<br>
+<input type="checkbox" disabled> 能把一份 800 行的長檔拆成多檔並用標題維持導覽結構（本單元 + 單元 3）<br>
+<input type="checkbox" disabled> 混合使用有序+無序+巢狀清單寫出「步驟+特點+子步驟」而不跑版（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 用分隔線與粗體組織一份長文件的可掃讀性（本單元 + 單元 1）<br>
+<input type="checkbox" disabled> 已用 git 管理文件並能指出某段文字是哪次 commit 改的（本單元 + 單元 7）<br>
+<input type="checkbox" disabled> 能解釋「為何中文文件用 <code>**</code> 而非 <code>__</code>」並給出範例（本單元 + 單元 8）<br>
+</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-01-markdown-intro.html">單元 1 · Markdown 是什麼</a>。</li>

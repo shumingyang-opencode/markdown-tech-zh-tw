@@ -212,6 +212,91 @@ LIMIT 10;</pre>
 <div class="callout"><strong>挑戰 2：</strong>在一個程式碼區塊中展示「如何用 Markdown 寫 Markdown」——用四個反引號包住三個反引號的範例，內部再包含行內 code 的雙反引號範例。三層巢狀都要正確渲染。</div>
 <div class="callout"><strong>挑戰 3：</strong>用 pandoc 把一份含多種程式碼語言的 .md 轉成 HTML，然後手動加入 <code>&lt;link rel="stylesheet"&gt;</code> 引入 Prism.js 的 CSS，驗證語法高亮在瀏覽器中顯示正確。</div>
 
+  <hr>
+<h2>① 專案級端到端 Worked Example</h2>
+<h3>專案：API 文件自動化 — 從原始碼抽取範例，產生多語言文件站</h3>
+<p>API 文件最大的痛點是「範例與真實程式碼不同步」。這個專案用「註解標記 + 抽取腳本」讓 Markdown 範例直接來自原始碼——文件永不與程式碼脫節。</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">產出檔案樹 · FILE TREE</div><pre>api-docs/
+├── src/
+│   └── handlers.ts     ← 註解內標記 // snippet:xxx
+├── docs/
+│   ├── index.md
+│   └── reference.md    ← 多語言程式碼範例（自動產生）
+├── scripts/
+│   └── extract-snippets.sh
+├── Makefile
+└── README.md</pre></div>
+  <div class="demo-block"><div class="demo-label">handlers.ts · KEY FILE</div><pre>// snippet:create-order-start
+export async function createOrder(
+  productId: string,
+  qty: number,
+): Promise&lt;Order&gt; {
+  const order = await db.orders.create({
+    productId,
+    qty,
+  });
+  return order;
+}
+// snippet:create-order-end</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">extract-snippets.sh · KEY FILE</div><pre>#!/bin/bash
+# 抽取 src/ 中 // snippet:x 標記之間的文字，
+# 並寫入 docs/reference.md 的對應 ```ts 區塊
+for tag in create-order update-order; do
+  awk "/snippet:$tag-start/,/snippet:$tag-end/" src/handlers.ts \
+    | grep -v "^// snippet" > /tmp/$tag.ts
+done
+echo "✅ 範例已從原始碼同步"</pre></div>
+  <div class="demo-block"><div class="demo-label">驗證命令與輸出 · VERIFY</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">$ make docs
+✅ 範例已從原始碼同步
+
+$ markdownlint docs/
+✅ 0 error
+
+$ git diff --stat docs/reference.md
+docs/reference.md | +12 -0
+（改一行原始碼 → 文件自動多 12 行）</pre>
+  </div></div>
+</div>
+<p><strong>為什麼這是「專案級」：</strong>它把「單元 4 的程式碼區塊」變成「整個團隊共用」的資產：語言標記統一、範例來源單一、內容與真實 API 同步。文件不再是「寫完就過期」的產物，而是可再生的產品。</p>
+<div class="callout info"><strong>延伸：</strong>更大型的專案可直接用 JSDoc / typedoc / Sphinx 產生整份參考文件——但「保留人工撰寫的教學式 Markdown + 自動注入真實範例」的混合模式，文件品質與維護成本通常最平衡。</div>
+
+<h2>② 效能/品質/安全深度</h2>
+<h3>本單元主題：品質 — 程式碼區塊的品質治理</h3>
+<p>程式碼區塊的品質比文字更講究「一致性」，因為它會被人複製貼上執行：</p>
+<ul>
+<li><strong>語言標記單一化</strong>：全站統一用 <code>python</code>、<code>bash</code>、<code>ts</code>——不要同一份文件混用 <code>py</code>/<code>python3</code>。</li>
+<li><strong>可複製性</strong>：範例不要放行首 <code>$</code> 提示符；有副作用的指令（<code>rm</code>、<code>DROP TABLE</code>）加警示。</li>
+<li><strong>真實性驗證</strong>：範例應能實際執行——Docs-as-Code 團隊會把文件中的範例跑進 CI。</li>
+<li><strong>行內 vs 區塊</strong>：變數名/指令用行內 <code>`</code>，多行可執行片段用區塊——混用會讓讀者困惑。</li>
+</ul>
+<div class="callout warn"><strong>常見誤區：</strong>「範例能跑」比「範例漂亮」重要。語法高亮是加分，但被複製貼上後無法執行的範例，是品質負分——寫完請實際跑一遍。</div>
+
+<h2>③ 站際比較對照表</h2>
+<p>以「程式碼片段與資料表達」為主題：</p>
+<table>
+<tr><th>面向</th><th>markdown</th><th>yaml</th><th>json</th><th>github</th><th>gitlab</th></tr>
+<tr><td>程式碼區塊</td><td><code>```lang</code> 圍欄</td><td>無（本身即資料）</td><td>無（本身即資料）</td><td>支援 + 高亮</td><td>支援 + 高亮</td></tr>
+<tr><td>行內程式碼</td><td><code>`code`</code></td><td>無</td><td>無</td><td>支援</td><td>支援</td></tr>
+<tr><td>資料內嵌示範</td><td><code>```json</code>/<code>```yaml</code> 區塊</td><td>原生（直接寫設定）</td><td>原生（直接寫資料）</td><td>diff 檢視</td><td>diff 檢視</td></tr>
+<tr><td>可執行性</td><td>需複製後執行</td><td>可被工具載入</td><td>可被程式解析</td><td>Actions 可執行</td><td>CI 可執行</td></tr>
+<tr><td>本單元重點</td><td>區塊/行內/高亮</td><td>設定值型別</td><td>資料結構定義</td><td>檔案檢視與評論</td><td>檔案檢視與評論</td></tr>
+</table>
+
+<h2>④ 互動式檢核清單</h2>
+<p>進階驗收——每項都牽涉其他單元的能力：</p>
+<div class="demo-render">
+<input type="checkbox" disabled> 同一份文件內的多語言區塊都標記正確語言並通過高亮檢查（本單元 + 單元 7）<br>
+<input type="checkbox" disabled> 範例中不含行首 <code>$</code> 提示符，且所有指令可直接複製執行（本單元 + 單元 8）<br>
+<input type="checkbox" disabled> 能寫出「區塊內含三個反引號」的巢狀示範（本單元 + 單元 2）<br>
+<input type="checkbox" disabled> 已建立「註解 → 抽取 → 文件」的同步機制（本單元 + 單元 7）<br>
+<input type="checkbox" disabled> 能將含 HTML 的程式碼安全寫入區塊而不被渲染（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 已用 pandoc 轉出帶高亮的 HTML 並驗證 CSS 生效（本單元 + 單元 1）<br>
+</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-03-links-images.html">單元 3 · 連結與圖片</a>。</li>

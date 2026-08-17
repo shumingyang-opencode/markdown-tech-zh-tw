@@ -248,6 +248,107 @@ title: 進階設定
 <div class="callout"><strong>挑戰 2：</strong>設計一個完整的 Docs-as-Code 工作流：.md 文件 → markdownlint 檢查 → Hugo 建置 → GitHub Pages 發佈。寫出完整的 CI 設定（GitHub Actions YAML），包含：觸發條件、安裝步驟、lint、build、deploy。每一步都附註解說明。</div>
 <div class="callout"><strong>挑戰 3：</strong>比較三種 SSG（Hugo / VitePress / mkdocs）對 Markdown 的支援差異：frontmatter 格式、表格語法、Mermaid 支援、程式碼高亮主題。用表格整理，並在最後用引用區塊寫出你的選擇建議與理由。</div>
 
+  <hr>
+<h2>① 專案級端到端 Worked Example</h2>
+<h3>專案：Docs-as-Code 完整文件站 — mkdocs + markdownlint + CI 部署一條龍</h3>
+<p>這個專案把「單元 7 的生態系」全部落地：Markdown 原始檔、frontmatter、Mermaid、靜態站生成器、CI/CD 部署——一套可以讓團隊「把文件當程式碼」實際運作的系統。</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">產出檔案樹 · FILE TREE</div><pre>product-docs/
+├── docs/
+│   ├── index.md          ← frontmatter + Mermaid
+│   └── guide/
+│       ├── quickstart.md
+│       └── config.md
+├── mkdocs.yml            ← 站點設定
+├── .markdownlint.json
+├── .github/workflows/
+│   └── docs.yml          ← CI：lint → build → deploy
+└── README.md</pre></div>
+  <div class="demo-block"><div class="demo-label">docs.yml · KEY FILE</div><pre>name: docs
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install mkdocs-material
+      - run: npx markdownlint-cli "docs/**/*.md"
+      - run: mkdocs build
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">docs/index.md · KEY FILE</div><pre>---
+title: Product Docs
+---
+
+# 產品文件
+
+```mermaid
+flowchart LR
+  A[文件原始檔] --> B[markdownlint]
+  B --> C[mkdocs build]
+  C --> D[GitHub Pages]
+```
+
+## 快速開始
+請見 [快速開始](guide/quickstart.md)。</pre></div>
+  <div class="demo-block"><div class="demo-label">驗證命令與輸出 · VERIFY</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">$ mkdocs build
+INFO  - Building documentation...
+INFO  - Cleaning site directory
+INFO  - 4 pages built in 0.8s
+✅ Documentation built successfully
+
+$ gh run list
+✓ docs  # 每次都自動 lint + build</pre>
+  </div></div>
+</div>
+<p><strong>為什麼這是「專案級」：</strong>Docs-as-Code 的核心不是工具，而是「流程」：寫文件的人用 git 提 PR、CI 自動檢查、合併後自動部署。文件品質成為可驗證、可回溯、可自動化的工程資產——這正是本單元各節的總和。</p>
+<div class="callout info"><strong>與第 1 輪範例的層級差異：</strong>第 1 輪是「用 VitePress 寫三頁文件」；這裡是「含 CI 品質門檻 + 自動部署的完整站點系統」——多了流程，少了手動。</div>
+
+<h2>② 效能/品質/安全深度</h2>
+<h3>本單元主題：效能 — 大型文件站的建置與渲染效能</h3>
+<p>文件站頁數一多，效能問題就會浮現，而多數瓶頸不在 Markdown 本身：</p>
+<ul>
+<li><strong>建置速度</strong>：Hugo 單執行檔最快（萬頁秒級）；VitePress/Astro 需要 Node 冷啟動。CI 中善用快取（<code>actions/cache</code>）可省一半時間。</li>
+<li><strong>圖片是隱形殺手</strong>：未壓縮的截圖會讓首屏與建置同時變慢。導入自動壓縮（sharp）並限制最大寬度。</li>
+<li><strong>Mermaid 成本</strong>：每個圖表都是客戶端渲染（SVG 計算）。大量圖表會拖慢頁面——必要時換成靜態圖或限制同時渲染。</li>
+<li><strong>增量建置</strong>：大型站用「只重建變更的頁面」策略；GitHub Pages 每次全量部署也需控制在合理時間內。</li>
+</ul>
+<div class="callout warn"><strong>效能預算：</strong>為建置時間與首屏大小各設預算（例如 build &lt; 3 分鐘、頁面 &lt; 500KB）。超過預算的 PR 在 CI 擋下——效能和品質一樣，要有門檻。</div>
+
+<h2>③ 站際比較對照表</h2>
+<p>以「生態系與整合能力」為主題：</p>
+<table>
+<tr><th>面向</th><th>markdown</th><th>yaml</th><th>json</th><th>github</th><th>gitlab</th></tr>
+<tr><td>標準化程度</td><td>多方言（CommonMark/GFM）</td><td>多實作（無官方規範）</td><td>標準（ECMA-404）</td><td>平台規範</td><td>平台規範</td></tr>
+<tr><td>生態工具</td><td>SSG/編輯器/轉換器</td><td>CI 設定/組態工具</td><td>序列化函式庫</td><td>Actions/Apps/Marketplace</td><td>CI/CD/Container Registry</td></tr>
+<tr><td>AI 整合</td><td>高（LLM 原生格式）</td><td>中（設定檔）</td><td>高（JSON Schema）</td><td>Copilot/API</td><td>Duo/API</td></tr>
+<tr><td>檔案形式</td><td>.md 純文字</td><td>.yml/.yaml</td><td>.json</td><td>平台服務（非檔案）</td><td>平台服務（非檔案）</td></tr>
+<tr><td>本單元重點</td><td>SSG/筆記/Mermaid/AI</td><td>frontmatter 來源</td><td>資料交換</td><td>協作生態</td><td>DevOps 生態</td></tr>
+</table>
+
+<h2>④ 互動式檢核清單</h2>
+<p>進階驗收——每項都牽涉其他單元的能力：</p>
+<div class="demo-render">
+<input type="checkbox" disabled> 已用某個 SSG 建立含 frontmatter + 自動目錄的文件站並本地預覽（本單元 + 單元 5）<br>
+<input type="checkbox" disabled> 已在文件站中嵌入 Mermaid 圖並確認渲染（本單元 + 單元 4）<br>
+<input type="checkbox" disabled> 已設定 CI：markdownlint → build → deploy 一氣呵成（本單元 + 單元 8）<br>
+<input type="checkbox" disabled> 已為圖片導入自動壓縮並建立效能預算（本單元 + 單元 3）<br>
+<input type="checkbox" disabled> 文件站每頁有唯一標題與描述（frontmatter SEO）（本單元 + 單元 2）<br>
+<input type="checkbox" disabled> 已建立「文件進 repo、與程式碼同 PR」的協作流程（本單元 + 單元 6）<br>
+</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-06-github-flavored-markdown.html">單元 6 · GitHub Flavored Markdown</a>。</li>
