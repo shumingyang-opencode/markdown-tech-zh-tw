@@ -108,6 +108,77 @@
     <ul><li>寫出任務清單、刪除線、自動連結、註腳與 emoji。</li><li>解釋 GFM 在 GitHub 場景的實際用途（README/Issue/PR）。</li><li>使用 HTML 內嵌與忽略 Markdown 語法（\ 跳脫）。</li><li>理解 GFM 表格與標準 Markdown 表格的差異。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：撰寫一份完整的 Release Notes（含任務清單追蹤進度）</h3>
+<p>假設 v2.0.0 發佈，你要把 CHANGELOG 整理成 GitHub Release Notes，包含：已完成/未完成項目、關聯 Issue、貢獻者感謝：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>## v2.0.0 Release Notes (2026-08-17)
+
+### 🎉 新功能
+- [x] 支援 dark mode :crescent_moon:
+- [x] 新增匯出 PDF 功能 #102
+- [ ] 多語言 i18n 支援 #115 *(延後至 v2.1)*
+
+### 🐛 修正
+- ~~修正登入逾時（舊方案：固定 30s）~~ → 改用動態 token 刷新 #98
+- 修正 CSV 匯出編碼問題 #101
+
+### 📦 依賴升級
+- `react` 18.2 → 18.3
+- `typescript` 5.4 → 5.5
+
+### 👏 感謝
+@alice 貢獻了 dark mode 的設計稿，
+@bob 修正了三個 critical bug。
+完整變更見 [CHANGELOG](../CHANGELOG.md)。</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p style="font-weight:700;">v2.0.0 Release Notes (2026-08-17)</p>
+    <p style="font-weight:600;">🎉 新功能</p>
+    <ul style="margin:0.2rem 0 0.3rem 1.4rem;font-size:0.82rem;">
+    <li><input type="checkbox" checked disabled> 支援 dark mode 🌙</li>
+    <li><input type="checkbox" checked disabled> 新增匯出 PDF 功能 <a href="#">#102</a></li>
+    <li><input type="checkbox" disabled> 多語言 i18n 支援 <a href="#">#115</a> <em>(延後至 v2.1)</em></li></ul>
+    <p style="font-weight:600;">🐛 修正</p>
+    <ul style="margin:0.2rem 0 0.3rem 1.4rem;font-size:0.82rem;">
+    <li><s>修正登入逾時（舊方案：固定 30s）</s> → 改用動態 token 刷新 <a href="#">#98</a></li>
+    <li>修正 CSV 匯出編碼問題 <a href="#">#101</a></li></ul>
+    <p style="font-weight:600;">📦 依賴升級</p>
+    <ul style="margin:0.2rem 0 0.3rem 1.4rem;font-size:0.82rem;">
+    <li><code>react</code> 18.2 → 18.3</li>
+    <li><code>typescript</code> 5.4 → 5.5</li></ul>
+    <p style="font-weight:600;">👏 感謝</p>
+    <p style="font-size:0.82rem;"><a href="#">@alice</a> 貢獻了 dark mode 的設計稿，<a href="#">@bob</a> 修正了三個 critical bug。完整變更見 <a href="../CHANGELOG.md">CHANGELOG</a>。</p>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong>任務清單讓讀者（與團隊）一眼看出哪些已完成、哪些延後；刪除線 + 文字說明展示「從舊方案到新方案」的演進；<code>#102</code> 自動連結到對應 Issue；<code>@mention</code> 自動通知貢獻者。一個 Release Notes 同時用了 GFM 的四大特色。</p>
+
+<h2>深入原理擴充</h2>
+<h3>GFM 解析器的內部處理順序</h3>
+<p>GFM 在標準 Markdown 基礎上增加了多個擴充，解析順序如下：</p>
+<ol>
+<li><strong>表格解析</strong>：先於行內處理——遇到 <code>|</code> 分隔的行且第二行是 <code>---</code> 模式時，整段被標記為表格節點。</li>
+<li><strong>任務清單</strong>：在清單解析階段，檢查每個 <code>-</code> 或 <code>*</code> 項目後面是否跟著 <code>[ ]</code> 或 <code>[x]</code>，是則生成 checkbox。</li>
+<li><strong>自動連結</strong>：在行內解析後期，掃描文字中的 URL 模式，轉成 <code>&lt;a href&gt;</code>。</li>
+<li><strong>Emoji 短碼</strong>：最後一步，把 <code>:shortcode:</code> 替換為 Unicode emoji 字元。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong>自動連結的 URL 匹配是<strong>貪婪</strong>的——如果 URL 後面緊跟著標點（如句號或逗號），有些渲染器會把標點也抓進 URL，導致連結失效。例如 <code>Visit https://example.com.</code> 可能變成連結包含結尾句號。解法：在 URL 後加一個空格，或用行內 code 包住 URL。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>任務清單沒顯示 checkbox</td><td><code>[ ]</code> 不在清單項目開頭</td><td>確保 <code>- [ ]</code> 是行首（<code>-</code> 後空格再 <code>[</code>）</td></tr>
+<tr><td><code>#123</code> 沒變成連結</td><td>不在 GitHub 環境中</td><td>GFM 自動連結僅在 GitHub 渲染器生效；其他環境用 <code>#123</code> 無法自動連結</td></tr>
+<tr><td>腳註顯示 <code>[^1]</code> 原文</td><td>渲染器不支援 GFM 註腳</td><td>改用 HTML <code>&lt;sup&gt;</code> 或手動在文末放說明</td></tr>
+<tr><td>Emoji 短碼原樣顯示</td><td>渲染器不支援 emoji 短碼替換</td><td>直接使用 Unicode emoji 字元（🎉）替代短碼</td></tr>
+<tr><td>刪除線和任務清單衝突</td><td><code>~~[x] task~~</code> 先解析刪除線再解析 checkbox</td><td>不要在任務清單項目上套用刪除線</td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>建立一個「Sprint 回顧」文件，包含：已完成的任務清單（至少 5 項，含 1 項巢狀子任務）、未完成的任務（未勾選）、被放棄的需求（用刪除線標記）、3 個關聯 Issue 的自動連結、1 位被 @mention 的貢獻者。</div>
+<div class="callout"><strong>挑戰 2：</strong>在同一份文件中混合使用 GFM 的所有擴充語法：任務清單、刪除線、自動連結、emoji 短碼、表格、腳註。然後把這份文件分別在 GitHub 和一個不支援 GFM 的 Markdown 編輯器中預覽，記錄渲染差異。</div>
+<div class="callout"><strong>挑戰 3：</strong>寫一份「GFM vs Standard Markdown vs CommonMark」的三方比較表格（至少 7 個比較維度），用參照式連結分別連結到三份規範文件。然後在文末加一個腳註說明你的偏好。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-05-tables-blockquote.html">單元 5 · 表格與進階區塊</a>。</li>

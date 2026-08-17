@@ -144,6 +144,62 @@ __底線粗體__（可選）</pre></div>
     <ul><li>寫出六級標題並說出 # 後要加空格。</li><li>區分粗體 **、斜體 *、刪除線 ~~，並寫出巢狀強調。</li><li>說明段落與段內換行的規則（空行 vs 行尾兩空格）。</li><li>寫出有序/無序/巢狀清單，並說明有序清單自動編號的特性。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：從 CSV 報表中提取異常行並產生結構化 Markdown 報告</h3>
+<p>假設有一份 <code>sales.csv</code>（欄位：日期、產品、數量、金額），你要找出「單筆金額超過 10000」的異常交易，並直接產出 Markdown 表格報告：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">終端 · TERMINAL</div><pre># 1. 先看 CSV 結構
+head -5 sales.csv
+
+# 2. 用 awk 提取金額 > 10000 的行（假設第4欄是金額）
+awk -F',' '$4 > 10000 {print}' sales.csv > anomalies.csv
+
+# 3. 用 awk 把 CSV 轉成 Markdown 表格
+echo "| 日期 | 產品 | 數量 | 金額 |"
+echo "|------|------|------|-----:|"
+awk -F',' '{printf "| %s | %s | %s | $%,d |\n", $1, $2, $3, $4}' \
+  anomalies.csv
+
+# 4. 統計總筆數與總金額
+echo ""
+echo "**異常交易統計**：$(wc -l < anomalies.csv) 筆，"
+echo "總金額 $(awk -F',' '{s+=$4} END{printf "$%,d", s}' anomalies.csv)"</pre></div>
+  <div class="demo-block"><div class="demo-label">模擬輸出 · OUTPUT</div><div class="demo-render">
+    <table style="font-size:0.75rem;"><tr><th>日期</th><th>產品</th><th>數量</th><th style="text-align:right">金額</th></tr>
+    <tr><td>2026-08-01</td><td>Server A</td><td>3</td><td style="text-align:right">$15,000</td></tr>
+    <tr><td>2026-08-05</td><td>License X</td><td>10</td><td style="text-align:right">$42,000</td></tr></table>
+    <p><strong>異常交易統計</strong>：2 筆，總金額 $57,000</p>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong><code>awk</code> 比 <code>grep</code> 更適合處理 CSV——<code>grep</code> 是文字匹配，遇到欄位邊界容易誤判（例如金額 9999 但名稱含 10000）。用 <code>-F','</code> 指定逗號分隔後，<code>$4</code> 精確取到金額欄，數學比較 <code>&gt; 10000</code> 才準確。最後用 <code>printf</code> 直接輸出 Markdown 表格格式，省去再加工的步驟。</p>
+<div class="callout info"><strong>為什麼不用 Python/Excel：</strong>如果只是單次快速分析，命令列 3 行搞定、不需要開環境。但若需定期執行或邏輯複雜（如多欄位條件篩選），建議改用 Python + pandas，可讀性與維護性更好。</div>
+
+<h2>深入原理擴充</h2>
+<h3>強調語法的巢狀解析規則</h3>
+<p>Markdown 渲染器處理 <code>**</code> 和 <code>*</code> 時，內部其實在跑一套<strong>Delimiter Run（分隔符運算）</strong>演算法。根據 CommonMark 規範：</p>
+<ol>
+<li>掃描全文找所有 <code>*</code> 和 <code>**</code> 的位置，標記每個分隔符的「左開」或「右關」屬性。</li>
+<li>左開分隔符必須：前方是空白或行首；右關分隔符必須：後方是空白或行尾（或標點）。</li>
+<li>配對時，內層先配——所以 <code>**粗體 *斜體* 粗體**</code> 是合法巢狀。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong><code>*a *b* c*</code> 在 CommonMark 規範中，第一個 <code>*</code> 是左開，第二個是右關（配對出「a <em>b</em>」），第三個無法配對所以原樣輸出。結果是「a <em>b</em> c*」而非預期的「<em>a b c</em>」。這就是為什麼建議：巢狀強調時，內層符號要<strong>完全包在外層內部</strong>，不要交叉。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>按 Enter 兩行卻合併成一段</td><td>Markdown 只認空行為段落分隔，單次換行會合併</td><td>在兩段之間插入一個空行</td></tr>
+<tr><td>巢狀清單第二層跑出來變成平行</td><td>縮排不足（未對齊上層項目文字）</td><td>確保子清單縮排至少 2-4 個空格，且對齊上層文字</td></tr>
+<tr><td>底線 <code>_</code> 強調在中文失效</td><td>底線與中文字符黏在一起，不被視為分隔符</td><td>改用 <code>**</code> 星號強調</td></tr>
+<tr><td>分隔線 <code>---</code> 變成了二級標題</td><td>分隔線前沒有空行</td><td>在 <code>---</code> 前加一個空行</td></tr>
+<tr><td>有序清單數字跳號但沒自動修正</td><td>使用了不支援自動編號的渲染器</td><td>手動寫正確數字，或確認渲染器支援 GFM</td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>寫一份「烹飪步驟」文件，混合使用有序清單（步驟順序）、無序清單（食材清單）、巢狀清單（子步驟）、粗體（關鍵提醒）和分隔線。要求：至少 3 層巢狀、至少 2 次強調。</div>
+<div class="callout"><strong>挑戰 2：</strong>用 Markdown 寫一份「比較三種程式語言」的文件，每種語言用一個 H2 標題，下方放一個特性對比表格（至少 5 列 4 欄），表格後接一段引用區塊寫你的推薦理由。練習標題、表格、引用三種語法的組合。</div>
+<div class="callout"><strong>挑戰 3：</strong>故意寫一份「有 5 處常見錯誤」的 Markdown 文件（缺空行、底線強調、分隔線缺空行等），然後寫出對應的修正版，並在每個修正旁用引用區塊說明為什麼原本是錯的。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-01-markdown-intro.html">單元 1 · Markdown 是什麼</a>。</li>

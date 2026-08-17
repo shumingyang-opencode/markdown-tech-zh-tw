@@ -123,6 +123,95 @@ run('config.yaml');</pre>
     <ul><li>用反引號寫行內 code，用三個反引號寫程式碼區塊。</li><li>為程式碼區塊指定語言以取得語法高亮，並列出常見語言標記。</li><li>在程式碼區塊內安全顯示反引號與 HTML 特殊字元。</li><li>用 tab 縮排式區塊寫入純文字範例。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：在 Markdown 文件中嵌入多種語言的執行結果，並用 pandoc 轉 HTML</h3>
+<p>假設你正在寫一份技術報告，需要展示 Python 處理資料 + bash 管道 + SQL 查詢的完整流程：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">原始碼 · SOURCE</div><pre>## 資料處理流程
+
+**Step 1：Python 清理資料**
+
+```python
+import pandas as pd
+df = pd.read_csv("raw_data.csv")
+df = df.dropna(subset=["revenue"])
+df.to_csv("clean.csv", index=False)
+print(f"保留 {len(df)} 筆有效記錄")
+```
+
+輸出：
+```
+保留 1,247 筆有效記錄
+```
+
+**Step 2：Bash 合併並排序**
+
+```bash
+# 合併三個分區的資料
+cat clean_*.csv | sort -t',' -k4 -rn > merged.csv
+echo "合併完成：$(wc -l < merged.csv) 筆"
+```
+
+**Step 3：SQL 查詢前 10 大客戶**
+
+```sql
+SELECT customer, SUM(revenue) AS total
+FROM merged
+GROUP BY customer
+ORDER BY total DESC
+LIMIT 10;
+```
+
+> ⚠️ 確保 Step 1 的 clean.csv 存在再執行 Step 2。</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染結果 · RENDERED</div><div class="demo-render">
+    <p style="font-weight:700;">Step 1：Python 清理資料</p>
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.6rem;font-size:0.72rem;">import pandas as pd
+df = pd.read_csv("raw_data.csv")
+df = df.dropna(subset=["revenue"])
+df.to_csv("clean.csv", index=False)
+print(f"保留 {len(df)} 筆有效記錄")</pre>
+    <p style="font-size:0.8rem;color:var(--text-soft);">輸出：<br><code>保留 1,247 筆有效記錄</code></p>
+    <p style="font-weight:700;">Step 2：Bash 合併並排序</p>
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.6rem;font-size:0.72rem;">cat clean_*.csv | sort -t',' -k4 -rn &gt; merged.csv
+echo "合併完成：$(wc -l &lt; merged.csv) 筆"</pre>
+    <p style="font-weight:700;">Step 3：SQL 查詢</p>
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.6rem;font-size:0.72rem;">SELECT customer, SUM(revenue) AS total
+FROM merged
+GROUP BY customer
+ORDER BY total DESC
+LIMIT 10;</pre>
+    <blockquote style="border-left:3px solid #f59e0b;padding-left:0.8rem;color:var(--text-soft);">⚠️ 確保 Step 1 的 clean.csv 存在再執行 Step 2。</blockquote>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong>每個步驟用對應語言的程式碼區塊（指定 <code>python</code>、<code>bash</code>、<code>sql</code>），渲染器會分別套用正確的語法高亮。比全部塞在同一個 <code>```text</code> 裡可讀性好 10 倍——讀者一眼就知道哪段是 Python、哪段是 SQL。</p>
+<div class="callout info"><strong>轉 HTML 注意：</strong>用 <code>pandoc --highlight-style=tango</code> 轉出的 HTML 會帶有語法高亮的 CSS class。若要嵌入靜態網站，記得一併帶入對應的 highlight.js 或 Prism CSS。</div>
+
+<h2>深入原理擴充</h2>
+<h3>HTML 實體轉義與程式碼區塊的交互</h3>
+<p>程式碼區塊是 Markdown 中的「免轉義」區域，但有幾個微妙的交互：</p>
+<ol>
+<li><strong>圍欄式區塊</strong>：三個反引號之間的所有內容都被視為純文字，<code>&lt;</code>、<code>&gt;</code>、<code>&amp;</code> 不會被解析為 HTML。這就是為什麼你在區塊內寫 <code>&lt;div&gt;</code> 可以正常顯示。</li>
+<li><strong>縮排式區塊</strong>：行為相同，但因為沒指定語言，渲染器不知道要套什麼高亮——結果就是無色彩的純文字。</li>
+<li><strong>語言標記的降級</strong>：如果你寫 <code>```typescript</code> 但渲染器不認識 <code>typescript</code>（有些只認 <code>ts</code>），會降級為無高亮。建議查閱目標渲染器支援的語言列表。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong>程式碼區塊的「結束圍欄」<code>```</code> 必須在行首（前面只能有空格）。如果在結尾 <code>```</code> 後面不小心加了文字（例如 <code>``` some note</code>），不會被識別為結束，會繼續往下找——可能導致整個文件後半段都變成程式碼的一部分。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>程式碼區塊沒語法高亮</td><td>沒指定語言，或語言標記拼錯</td><td>確認 <code>```</code> 後有正確語言名稱（如 <code>python</code> 而非 <code>py</code>）</td></tr>
+<tr><td>行內 code 內的反引號外露</td><td>只用一層反引號包住</td><td>改用雙反引號 <code>`` `code` ``</code> 包住含反引號的內容</td></tr>
+<tr><td>程式碼區塊提前結束</td><td>程式碼內容有三個連續反引號</td><td>改用更多反引號（四個）當圍欄，或用縮排式區塊</td></tr>
+<tr><td>縮排式區塊前面被吃掉四格</td><td>縮排式區塊會吃掉前四個空格</td><td>改用圍欄式區塊（不影響內容縮排）</td></tr>
+<tr><td>HTML 標籤在區塊外被渲染</td><td>忘了包在程式碼區塊內</td><td>用 <code>`</code> 或 <code>```</code> 包住所有 HTML 程式碼</td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>寫一份「Docker 部署指南」，包含 Dockerfile（dockerfile 語言）、docker-compose.yml（yaml 語言）、bash 啟動腳本、以及一段 nginx.conf（nginx 語言）。要求：每段都有正確的語言標記，並且在行內 code 中提及容器名稱。</div>
+<div class="callout"><strong>挑戰 2：</strong>在一個程式碼區塊中展示「如何用 Markdown 寫 Markdown」——用四個反引號包住三個反引號的範例，內部再包含行內 code 的雙反引號範例。三層巢狀都要正確渲染。</div>
+<div class="callout"><strong>挑戰 3：</strong>用 pandoc 把一份含多種程式碼語言的 .md 轉成 HTML，然後手動加入 <code>&lt;link rel="stylesheet"&gt;</code> 引入 Prism.js 的 CSS，驗證語法高亮在瀏覽器中顯示正確。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-03-links-images.html">單元 3 · 連結與圖片</a>。</li>

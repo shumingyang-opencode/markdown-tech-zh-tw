@@ -98,6 +98,68 @@
     <ul><li>寫出行內連結與參照式連結，並說出何時用哪一種。</li><li>寫出圖片語法，搭配 alt 文字與標題提示。</li><li>正確使用相對路徑與絕對路徑，並解釋兩者在 GitHub 的差異。</li><li>用巢狀連結做出「圖片當按鈕」的進階用法。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：批次檢查 repo 中所有 Markdown 檔的連結是否存活</h3>
+<p>假設你的 docs/ 資料夾有 20 個 .md 檔，裡面共 150 條連結。要快速找出哪些壞掉：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">終端 · TERMINAL</div><pre># 1. 提取所有 .md 檔中的 URL（行內連結 + 圖片）
+grep -rhoP '(?&lt;=\()(https?://[^)]+)' docs/*.md | sort -u > urls.txt
+
+# 2. 同時提取相對路徑的連結
+grep -rhoP '(?&lt;=\()((?!\.\.?\./)(?!https?://)[^)]+\.(png|jpg|svg|md))' \
+  docs/*.md | sort -u > local.txt
+
+# 3. 用 curl 批次檢查外部連結（平行 + 超時 5 秒）
+xargs -n1 -P8 curl -o /dev/null -sL -w "%{http_code} %{url}\n" \
+  &lt; urls.txt 2>/dev/null | grep -v "200\|301\|302" > broken.txt
+
+# 4. 顯示壞掉的連結
+echo "=== 外部壞連結 ==="
+cat broken.txt
+echo ""
+echo "=== 本地相對路徑（需手動確認）==="
+cat local.txt</pre></div>
+  <div class="demo-block"><div class="demo-label">模擬輸出 · OUTPUT</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">=== 外部壞連結 ===
+404 https://example.com/old-docs
+410 https://legacy.api.io/v1
+
+=== 本地相對路徑（需手動確認）===
+demo.png
+api.md
+architecture.svg</pre>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong><code>grep -P</code>（Perl 正則）的前瞻斷言 <code>(?&lt;=\()</code> 只匹配括號內的 URL，不會誤抓到文字中的網址。<code>xargs -P8</code> 開 8 個平行 curl，比逐條測快 5-8 倍。用 <code>sort -u</code> 先去重，避免同一個壞連結重複報告。</p>
+<div class="callout info"><strong>替代方案：</strong>如果 repo 在 GitHub 上，可以用 <a href="https://github.com/gaurav-nelson/github-action-markdown-link-check">markdown-link-check</a> GitHub Action，設定 <code>.mlc.yml</code> 就能在 CI 自動檢查，支援重試、排除清單、本地路徑驗證。</div>
+
+<h2>深入原理擴充</h2>
+<h3>Markdown 連結與圖片的內部解析流程</h3>
+<p>渲染器處理 <code>[text](url)</code> 時的內部流程：</p>
+<ol>
+<li><strong>行內分詞</strong>：掃描到 <code>[</code> 時進入「連結文字模式」，收集到 <code>]</code> 為止；接著檢查下一個字元是否為 <code>(</code>，是則進入「行內連結 URL 模式」。</li>
+<li><strong>URL 提取</strong>：收集 <code>(</code> 內的內容直到匹配的 <code>)</code>。支援 <code>title</code>（用引號包住的額外文字）。</li>
+<li><strong>圖片判斷</strong>：如果 <code>[</code> 前有一個 <code>!</code>，生成 <code>&lt;img&gt;</code> 而非 <code>&lt;a&gt;</code>。</li>
+<li><strong>參照式連結</strong>：遇到 <code>[text][ref]</code> 時，去文件末尾找 <code>[ref]: URL</code> 的定義。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong>圖片 alt 文字內若有 <code>]</code> 會提前結束匹配。例如 <code>![img[a]b](url.png)</code> 會被解析為 alt = <code>img[a</code>，然後 <code>b](url.png)</code> 成為普通文字。解法：alt 文字內不要放 <code>]</code> 字元，或用 HTML <code>&lt;img&gt;</code> 標籤替代。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>圖片顯示 alt 文字而非圖片</td><td>相對路徑不對（以 repo 根為基準，非 .md 檔所在位置）</td><td>確認路徑從 repo 根開始算，或用絕對 URL</td></tr>
+<tr><td>連結文字原樣顯示 <code>[文字](網址)</code></td><td>中括號和括號之間有換行或多余空格</td><td>確保 <code>][</code> 與 <code>](</code> 之間沒有空格或換行</td></tr>
+<tr><td>參照式連結未渲染</td><td>定義 ID 拼錯或找不到對應定義</td><td>確認 <code>[ref]</code> 和 <code>[ref]:</code> 的 ID 完全一致（含大小寫）</td></tr>
+<tr><td>巢狀圖片連結點了沒反應</td><td><code>[![alt](img)](url)</code> 中 img 路徑錯，導致圖片壞掉</td><td>先確認圖片能顯示，再包上連結</td></tr>
+<tr><td>GitHub README 內圖片載入很慢</td><td>圖片檔太大（原始截圖未壓縮）</td><td>用 <code>squoosh.app</code> 或 <code>sharp</code> 壓縮到 1280px 以內</td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>建立一個「圖片展示頁」，用 Markdown 寫出至少 6 張圖片的畫廊，每張圖片有不同的對齊方式（左、中、右），全部點擊後連結到對應的高清原圖。使用巢狀連結 + 圖片語法。</div>
+<div class="callout"><strong>挑戰 2：</strong>為你自己的 repo 寫一份 README，裡面包含：至少 3 個參照式連結（定義放在文末）、2 個巢狀圖片連結（徽章）、1 個相對路徑連結到本地文件、1 個外部絕對連結。然後在另一個 .md 檔中參照同一個 ID，驗證參照式連結的「改一處、全部更新」特性。</div>
+<div class="callout"><strong>挑戰 3：</strong>寫一個 shell script，自動掃描指定 .md 檔中的所有相對路徑圖片連結，檢查檔案是否存在，不存在的輸出警告。提示：<code>grep</code> 提取路徑 → <code>test -f</code> 檢查。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-02-basic-syntax.html">單元 2 · 基礎語法</a>。</li>

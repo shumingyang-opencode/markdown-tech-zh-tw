@@ -110,6 +110,89 @@ MIT License</pre></div>
     <ul><li>從零寫出一份結構完整的 README（含徽章/安裝/使用/授權）。</li><li>避開常見錯誤（換行、縮排、反引號數目、表格欄數）。</li><li>用 markdownlint 與工具鏈檢查文件品質。</li><li>建立個人化的「交付前檢查清單」。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：建立一個跨平台的完整 README 檢查腳本</h3>
+<p>在 CI/CD 中自動化 Markdown 品質檢查——整合 markdownlint + 圖片路徑驗證 + 連結檢查：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">check-markdown.sh</div><pre>#!/bin/bash
+set -e
+
+echo "=== Markdown 品質檢查 ==="
+
+# 1. markdownlint 語法檢查（忽略 MD013 段落長度、MD033 HTML）
+echo "[1/3] markdownlint 檢查..."
+npx markdownlint-cli "docs/**/*.md" \
+  --config .markdownlint.json || {
+    echo "❌ markdownlint 失敗"
+    exit 1
+  }
+echo "✅ markdownlint 通過"
+
+# 2. 驗證所有本地圖片路徑存在
+echo "[2/3] 圖片路徑驗證..."
+MISSING=0
+grep -rhoP '(?&lt;=\()((?!\.\.?\./)(?!https?://)[^)]+\.(png|jpg|svg|gif))' \
+  docs/*.md docs/**/*.md 2>/dev/null | sort -u | while read -r img; do
+  if [ ! -f "docs/$img" ] && [ ! -f "$img" ]; then
+    echo "  ❌ 缺少：$img"
+    MISSING=$((MISSING + 1))
+  fi
+done
+echo "✅ 圖片路徑檢查完成"
+
+# 3. 檢查是否有未關閉的程式碼區塊
+echo "[3/3] 程式碼區塊完整性..."
+BAD=$(grep -rn '```' docs/*.md | awk -F: '{print NR}' | wc -l)
+if [ $((BAD % 2)) -ne 0 ]; then
+  echo "❌ 偵測到未關閉的程式碼圍欄"
+  exit 1
+fi
+echo "✅ 程式碼區塊完整"
+
+echo ""
+echo "🎉 所有檢查通過！"</pre></div>
+  <div class="demo-block"><div class="demo-label">模擬輸出 · OUTPUT</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">=== Markdown 品質檢查 ===
+[1/3] markdownlint 檢查...
+✅ markdownlint 通過
+[2/3] 圖片路徑驗證...
+✅ 圖片路徑檢查完成
+[3/3] 程式碼區塊完整性...
+✅ 程式碼區塊完整
+
+🎉 所有檢查通過！</pre>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong>光靠 markdownlint 不夠——它不檢查圖片路徑是否存在，也不檢查未關閉的程式碼圍欄。把三個檢查串成一個 script，一次跑完涵蓋語法、路徑、結構三個面向。整合進 CI 後，每次 PR 都會自動驗證。</p>
+<div class="callout info"><strong>為什麼不用現成工具：</strong>也可以用 <code>lychee</code>（跨平台連結檢查器）或 <code>markdown-link-check</code>，但它們主要是檢查外部 URL 是否存活。上面的腳本更專注於「本地 Markdown 結構正確性」——這正是多數工具忽略的面向。</div>
+
+<h2>深入原理擴充</h2>
+<h3>Markdown 轉換工具（pandoc / markitdown）的內部處理</h3>
+<p>當你用 <code>pandoc input.md -o output.html</code> 時，內部發生的事：</p>
+<ol>
+<li><strong>詞法分析（Lexing）</strong>：把 Markdown 文字拆成 token 串——標題 token、段落 token、強調 token、代碼圍欄 token 等。</li>
+<li><strong>語法分析（Parsing）</strong>：把 token 串組成 AST（抽象語法樹）。例如 <code># Title</code> 變成 <code>Header(1, [], [Str "Title"])</code>。</li>
+<li><strong>轉換（Transform）</strong>：可選的 AST 轉換步驟——pandoc 的過濾器（filters）在這裡介入，可以新增/修改/刪除節點。</li>
+<li><strong>輸出生成（Writing）</strong>：遍歷 AST，根據目標格式（HTML/LaTeX/DOCX）生成對應輸出。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong><code>pandoc</code> 預設不會把 Markdown 中的 <code>&lt;</code> 當成 HTML——它會先嘗試當成 Markdown 行內元素。要讓 pandoc 正確處理 HTML，需要加 <code>--from markdown+raw_html</code>。而 <code>markitdown</code> 的方向相反：它把 HTML/PDF/DOCX <strong>轉回</strong> Markdown，內部用的是相反的管線（HTML 解析 → Markdown 生成）。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>markdownlint 報告 MD033（不允許內嵌 HTML）</td><td>預設規則禁止 HTML，但你的文件確實需要</td><td>在 <code>.markdownlint.json</code> 設定 <code>"MD033": false</code> 關閉此規則</td></tr>
+<tr><td>pandoc 轉 HTML 後圖片路徑全壞</td><td>用相對路徑，但輸出的 HTML 在不同目錄</td><td>加 <code>--resource-path=.</code> 或改用絕對 URL</td></tr>
+<tr><td>markitdown 轉出的 Markdown 表格欄寬全亂</td><td>原文件的表格是用 HTML <code>&lt;table&gt;</code> 寫的</td><td>markitdown 會盡力轉換，但複雜 HTML 表格建議手動調整</td></tr>
+<tr><td>CI 中 npx markdownlint-cli 找不到</td><td>沒安裝或沒加到 package.json</td><td>執行 <code>npm install -D markdownlint-cli</code> 或用 <code>npx --yes</code></td></tr>
+<tr><td>GitBook / Notion 轉 Markdown 後格式崩壞</td><td>這些平台的 Markdown 是私有擴充，不是標準 GFM</td><td>用 markitdown 轉出後手動修正，或用 <code>pandoc</code> 做中繼轉換</td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>建立一個完整的「交付前 Markdown 檢查清單」腳本，涵蓋：markdownlint 語法、所有相對路徑連結可點、所有圖片存在、程式碼圍欄已關閉、表格欄數一致、H1 只有一個。腳本跑完後輸出一份 JSON 格式的檢查報告。</div>
+<div class="callout"><strong>挑戰 2：</strong>寫一份「從 Notion 遷移到 Markdown」的完整指南：先用 markitdown 把 Notion 匯出的 HTML 轉成 Markdown，然後列出 10 個常見的格式問題（如 Notion 的 toggle block 轉成 <code>&lt;details&gt;</code> 的差異），每個問題附上修正前後的對比。</div>
+<div class="callout"><strong>挑戰 3：</strong>建立一個 GitHub Actions workflow，在每次 PR 修改 .md 檔時自動執行：(1) markdownlint 檢查、(2) 連結存活檢查、(3) 圖片大小檢查（超過 500KB 警告）。把 workflow 設定檔和一份範例 README 一起放在 repo 中。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-07-markdown-ecosystem.html">單元 7 · Markdown 生態系</a>。</li>

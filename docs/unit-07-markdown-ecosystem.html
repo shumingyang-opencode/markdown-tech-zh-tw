@@ -139,6 +139,115 @@ flowchart LR
     <ul><li>說出 Markdown 在 GitHub、靜態網站、筆記軟體的角色。</li><li>用 frontmatter 寫出帶元資料的文章。</li><li>用 Mermaid 在 Markdown 內畫流程圖/序列圖。</li><li>解釋 Docs-as-Code 工作流與 AI 工具對 Markdown 的依賴。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：用 VitePress 建立完整文件站，含 frontmatter + Mermaid + 自動目錄</h2>
+<p>假設你要為一個開源 CLI 工具建立文件站，以下是三篇核心文件的原始檔：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">docs/index.md</div><pre>---
+layout: home
+hero:
+  name: "my-cli"
+  text: "超快速的檔案處理工具"
+  tagline: 一行指令，百萬筆資料
+  actions:
+    - theme: brand
+      text: 快速開始
+      link: /guide/quickstart
+---
+
+## 為什麼選 my-cli？
+
+```mermaid
+flowchart LR
+  A[資料輸入] --> B[平行處理]
+  B --> C[壓縮輸出]
+  B --> D[報告產生]
+```
+
+- 🚀 比同類工具快 10 倍
+- 🔧 零配置即可使用
+- 📊 自動產生處理報告</pre></div>
+  <div class="demo-block"><div class="demo-label">docs/guide/quickstart.md</div><pre>---
+title: 快速開始
+---
+
+# 快速開始
+
+## 安裝
+
+```bash
+npm install -g my-cli
+```
+
+## 基本使用
+
+```bash
+# 處理單一檔案
+my-cli process input.csv
+
+# 批次處理整個目錄
+my-cli process ./data/ --output ./results/
+
+# 產生 HTML 報告
+my-cli process ./data/ --report html
+```
+
+## 下一步
+
+- [進階設定](/guide/config)
+- [API 參考](/guide/api)</pre></div>
+</div>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">docs/guide/config.md</div><pre>---
+title: 進階設定
+---
+
+# 進階設定
+
+| 選項 | 類型 | 預設值 | 說明 |
+|:-----|:-----|:------:|:-----|
+| `--parallel` | number | `4` | 平行執行數 |
+| `--compress` | boolean | `true` | 是否壓縮輸出 |
+| `--report` | string | `none` | 報告格式（html/json/none） |
+| `--timeout` | number | `30` | 超時秒數 |
+
+::: tip 提示
+`--parallel` 建議設為 CPU 核心數的 50-75%。
+:::</pre></div>
+  <div class="demo-block"><div class="demo-label">渲染效果 · RENDERED</div><div class="demo-render">
+    <p style="font-size:0.82rem;">VitePress 會自動：<br>✅ 根據 frontmatter 產生首頁 hero 區<br>✅ 從 H2/H3 生成側邊欄目錄<br>✅ 渲染 Mermaid 為圖形<br>✅ <code>::: tip</code> 轉為提示框<br>✅ 頁面間連結自動驗證</p>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong>VitePress 的 frontmatter 支援最完整（hero、layout、sidebar），<code>::: tip</code> 語法比手寫 HTML 方言更簡潔，Mermaid 圖表原生支援——對技術文件來說，開發體驗和渲染效果都是頂級。</p>
+
+<h2>深入原理擴充</h2>
+<h3>Markdown 渲染管線在靜態網站生成器中的位置</h3>
+<p>以 Hugo / VitePress / Astro 為例，完整的建置流程是：</p>
+<ol>
+<li><strong>Frontmatter 解析</strong>：YAML/TOML 標頭被解析為頁面的元資料（title、date、tags），用於產生 <code>&lt;head&gt;</code> 標籤與導覽。</li>
+<li><strong>Markdown → HTML</strong>：正文經渲染引擎（marked / markdown-it / unified）轉成 HTML 片段。</li>
+<li><strong>模板套用</strong>：HTML 片段被插入佈局模板（layout）的 <code>{{ content }}</code> 位置。</li>
+<li><strong>靜態資源處理</strong>：圖片、CSS、JS 被複製或打包。</li>
+<li><strong>輸出</strong>：每個 .md 生成對應的 .html，目錄結構反映 URL 路由。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong>frontmatter 的 <code>date</code> 欄位在 Hugo 中若寫成 <code>date: 2026-8-17</code>（月份沒補零），會解析失敗或被當成字串。正確寫法是 <code>date: 2026-08-17</code>。另外，某些 SSG 的 frontmatter 不支援巢狀物件（如 VitePress 的 <code>hero.actions</code> 需要用 YAML 的縮排格式，不是 JSON）。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>Mermaid 圖表顯示原始碼文字</td><td>環境不支援 Mermaid（例如用 markdown-it 預設沒裝插件）</td><td>確認 SSG 有安裝 mermaid 並啟用（VitePress 預設支援）</td></tr>
+<tr><td>frontmatter 的中文標題變成亂碼</td><td>檔案編碼不是 UTF-8</td><td>用編輯器確保檔案以 UTF-8 編碼儲存</td></tr>
+<tr><td>Docs-as-Code CI 失敗：markdownlint error</td><td>規則過嚴（如 MD013 段落過長、MD033 內嵌 HTML）</td><td>建立 <code>.markdownlint.json</code> 自訂規則，關閉不適用的檢查</td></tr>
+<tr><td>頁面間連結 404</td><td>用了相對路徑但 SSG 的 URL 結構不同</td><td>改用 SSG 提供的絕對路徑或 <code>/guide/quickstart</code> 格式</td></tr>
+<tr><td>GitHub Pages 部署後圖片壞掉</td><td>repo 有子路徑（<code>username.github.io/repo/</code>），但資源路徑沒帶子路徑</td><td>在 SSG config 設定 <code>base: '/repo/'</code></td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>用 Markdown + frontmatter 建立一個 3 頁的迷你文件站結構：首頁（hero layout）、安裝指南、API 參考。每頁都有 YAML frontmatter（title、description、tags），頁面之間用相對連結互連。然後畫出 Mermaid 架構圖顯示頁面結構。</div>
+<div class="callout"><strong>挑戰 2：</strong>設計一個完整的 Docs-as-Code 工作流：.md 文件 → markdownlint 檢查 → Hugo 建置 → GitHub Pages 發佈。寫出完整的 CI 設定（GitHub Actions YAML），包含：觸發條件、安裝步驟、lint、build、deploy。每一步都附註解說明。</div>
+<div class="callout"><strong>挑戰 3：</strong>比較三種 SSG（Hugo / VitePress / mkdocs）對 Markdown 的支援差異：frontmatter 格式、表格語法、Mermaid 支援、程式碼高亮主題。用表格整理，並在最後用引用區塊寫出你的選擇建議與理由。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>上一篇：<a href="unit-06-github-flavored-markdown.html">單元 6 · GitHub Flavored Markdown</a>。</li>

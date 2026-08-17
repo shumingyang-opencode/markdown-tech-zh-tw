@@ -103,6 +103,69 @@
     <ul><li>說出 Markdown 與 HTML 的關係（互轉、優先級）。</li><li>舉例說明 Markdown 被哪些場景使用（GitHub/筆記/靜態網站/AI）。</li><li>解釋「原始檔可讀」與「版本控制友善」為什麼是 Markdown 的殺手級優點。</li><li>用「標題+粗體+清單」寫出第一份文件。</li></ul>
   </div>
 
+<hr>
+<h2>進階真實情境 Worked Example</h2>
+<h3>情境：用 Markdown 自動產生 Changelog 並同步到 GitHub Release</h3>
+<p>假設你有一個專案，每次發版都要從 git log 產生 Changelog。以下是一條完整的命令序列：</p>
+<div class="demo-grid">
+  <div class="demo-block"><div class="demo-label">終端 · TERMINAL</div><pre># 1. 取得上一個 tag 以來的所有 commit
+git log $(git describe --tags --abbrev=0)..HEAD \
+  --pretty=format:"- %s (%h)" > changes.md
+
+# 2. 在開頭插入標題與分類
+sed -i '1i\## [v1.3.0] - 2026-08-17\n\n### Changed\n' changes.md
+
+# 3. 把帶有 #bug 的 commit 歸入 Fixed 分類
+git log $(git describe --tags --abbrev=0)..HEAD \
+  --grep="#bug" --pretty=format:"- %s (%h)" | \
+  sed 's/^/- /' > bugs.md
+echo -e "\n### Fixed\n$(cat bugs.md)" >> changes.md
+
+# 4. 用 pandoc 轉成 HTML（可嵌入 GitHub Release body）
+pandoc changes.md -o changes.html
+
+cat changes.md</pre></div>
+  <div class="demo-block"><div class="demo-label">模擬輸出 · OUTPUT</div><div class="demo-render">
+    <pre style="background:#0b0b11;border:1px solid var(--line);border-radius:8px;padding:0.7rem;font-size:0.72rem;">## [v1.3.0] - 2026-08-17
+
+### Changed
+- 新增 dark mode 支援 (a1b2c3d)
+- 升級 dependencies (e4f5g6h)
+
+### Fixed
+- 修正登入逾時問題 (i7j8k9l)
+- 修正匯出 CSV 編碼 (m0n1o2p)</pre>
+  </div></div>
+</div>
+<p><strong>為什麼選這條路徑：</strong>手動從 git log 複製貼上容易漏 commit 且格式不一致。用 <code>git log --pretty=format</code> 統一輸出格式，再用 <code>sed</code> 插入 Markdown 標題結構，最後用 <code>pandoc</code> 轉 HTML——三步全自動、可寫進 CI script，每次發版跑一次就不會漏。</p>
+<div class="callout info"><strong>替代方案比較：</strong>也可用 <code>conventional-changelog</code> 或 <code>release-please</code>，但它們要求 commit 遵循 Conventional Commits 規範。如果你的團隊沒在管 commit 格式，上面的手動方法更彈性。</div>
+
+<h2>深入原理擴充</h2>
+<h3>Markdown 渲染引擎的內部運作</h3>
+<p>當你按下「預覽」，渲染引擎（如 marked、markdown-it、CommonMark）內部其實在跑一套<strong>多階段管線（pipeline）</strong>：</p>
+<ol>
+<li><strong>區塊解析（Block Parsing）</strong>：用正則逐行掃描，判斷每一行是標題、段落、清單項、代碼圍欄、還是 HTML 區塊。遇到 <code>#</code> 開頭就標記為 ATX Heading；遇到 <code>-</code> 或 <code>*</code> 開頭且在清單上下文中就延續清單。</li>
+<li><strong>行內解析（Inline Parsing）</strong>：在段落文字內掃描 <code>**</code>、<code>*</code>、<code>`</code>、<code>[</code>、<code>!</code> 等行內標記，用正則拆成 token 串。</li>
+<li><strong>AST 構建</strong>：把 token 串組成抽象語法樹（Abstract Syntax Tree），每個節點是標題、段落、強調等。</li>
+<li><strong>HTML 生成</strong>：遍歷 AST，每個節點轉成對應的 HTML 標籤。</li>
+</ol>
+<div class="callout warn"><strong>容易忽略的邊界案例：</strong>行內解析是<strong>貪婪匹配</strong>的——<code>**a** b **c**</code> 會正確渲染為「<strong>a</strong> b <strong>c</strong>」，但 <code>**a *b** c*</code> 在部分渲染器會產生不預期的結果，因為巢狀強調的開合順序不符合「先開後關」規則。建議：巢狀強調時，內層標記要完全包在外層標記內部，不要交叉。</div>
+
+<h2>診斷式疑難排解表</h2>
+<table>
+<tr><th>症狀</th><th>可能原因</th><th>解決方案</th></tr>
+<tr><td>標題沒顯示，直接出現在正文</td><td><code>#</code> 後面沒有空格</td><td>改為 <code># 標題</code>（# 後加一個空格）</td></tr>
+<tr><td>清單突然變成段落文字</td><td>清單項之間有縮排不一致的空行</td><td>確保每行 <code>-</code> 在相同欄位起始</td></tr>
+<tr><td>粗體文字沒變粗</td><td><code>**</code> 兩側沒有緊貼文字（有空格）</td><td>改為 <code>**粗體**</code>，星號緊貼文字</td></tr>
+<tr><td>同一個 .md 在 GitHub 和本地渲染不同</td><td>用了非 GFM 標準的擴充語法</td><td>確認語法在 GFM 規範內，或改用標準 Markdown</td></tr>
+<tr><td>圖片在 GitHub README 載入失敗</td><td>用了 repo 根為基準的相對路徑，但 README 在子資料夾</td><td>改為從 repo 根算起的路徑 <code>docs/img/x.png</code></td></tr>
+</table>
+
+<h2>進階挑戰題</h2>
+<div class="callout"><strong>挑戰 1：</strong>寫一份「Markdown vs HTML vs reStructuredText」的三方比較表格（至少 6 個比較維度），包含對齊方式不同的欄位。然後用參照式連結把每個工具連結到官網。</div>
+<div class="callout"><strong>挑戰 2：</strong>用 Markdown 寫一份「公司內部 Markdown 風格指南」，內容包含：標題層級規範、強調符號選擇、清單縮排標準、程式碼區塊命名約定。至少使用 3 種不同的 Markdown 區塊語法（表格、引用、代碼區塊）。</div>
+<div class="callout"><strong>挑戰 3：</strong>從一個真實的 git repo（你自己的專案也行）執行 <code>git log --oneline -20</code>，然後用純 Markdown 把這 20 個 commit 整理成分類的 Changelog（Changed / Fixed / Added），練習「原始資料 → 結構化文件」的轉換。</div>
+
   <h2>延伸閱讀</h2>
   <ul>
 <li>下一篇：<a href="unit-02-basic-syntax.html">單元 2 · 基礎語法</a>。</li>
